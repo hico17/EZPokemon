@@ -8,9 +8,32 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import Utilities
 
 class PokemonListViewController: UIViewController {
+    
+    var isLoading: Bool = false {
+        didSet {
+            if isLoading {
+                messageView.showAndHide(message: "Loading")
+            }
+        }
+    }
 
+    override func loadView() {
+        let view = UIView(frame: UIScreen.main.bounds)
+        view.backgroundColor = .white
+        self.view = view
+        addSubviews()
+        addConstraints()
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        bindData()
+        viewModel.fetchPokemonListItemViewModel()
+    }
+    
     init(viewModel: PokemonListViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -19,13 +42,6 @@ class PokemonListViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        addSubviews()
-        addConstraints()
-        bindData()
-    }
 
     // MARK: Private
     
@@ -33,16 +49,33 @@ class PokemonListViewController: UIViewController {
     private let disposeBag = DisposeBag()
     
     private lazy var pokemonCollectionView: UICollectionView = {
-        let collectionView = UICollectionView()
+        let collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: collectionViewLayout)
+        collectionView.backgroundColor = .clear
         collectionView.register(PokemonListItemCollectionViewCell.self)
         return collectionView
     }()
     
+    private lazy var collectionViewLayout: UICollectionViewFlowLayout = {
+        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        layout.itemSize = CGSize(width: view.frame.width / 4, height: 100)
+        layout.minimumInteritemSpacing = 8
+        return layout
+    }()
+    
+    private lazy var messageView: MessageView = {
+        let messageView = MessageView(frame: .zero)
+        return messageView
+    }()
+    
     private func bindData() {
-        viewModel.fetchPokemonListItemViewModel()
-        viewModel.pokemonListItemViewModels.bind(to: pokemonCollectionView.rx.items(cellIdentifier: PokemonListItemCollectionViewCell.reusableIdentifier, cellType: PokemonListItemCollectionViewCell.self)) { index, model, cell in
-            
+        viewModel.title.subscribe(onNext: { title in
+            self.title = title
+        }).disposed(by: disposeBag)
+        viewModel.pokemonListItemViewModels.observe(on: MainScheduler.instance).bind(to: pokemonCollectionView.rx.items(cellIdentifier: PokemonListItemCollectionViewCell.reusableIdentifier, cellType: PokemonListItemCollectionViewCell.self)) { _, viewModel, cell in
+            cell.viewModel = viewModel
         }.disposed(by: disposeBag)
+        viewModel.isLoading.bind(to: rx.isLoading).disposed(by: disposeBag)
     }
 }
 
@@ -52,14 +85,30 @@ extension PokemonListViewController: CodeDesignable {
     
     func addSubviews() {
         view.addSubview(pokemonCollectionView)
+        view.addSubview(messageView)
     }
     
     func addConstraints() {
-        NSLayoutConstraint.activate([
-            pokemonCollectionView.widthAnchor.constraint(equalTo: view.widthAnchor),
+        NSLayoutConstraint.activateWithoutResizingMasks([
+            pokemonCollectionView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 8),
+            pokemonCollectionView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -8),
             pokemonCollectionView.heightAnchor.constraint(equalTo: view.heightAnchor),
-            pokemonCollectionView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            pokemonCollectionView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            pokemonCollectionView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            messageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            messageView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
+            messageView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
+            messageView.heightAnchor.constraint(equalToConstant: 100)
         ])
+    }
+}
+
+// MARK: - Reactive extensions
+
+extension Reactive where Base: PokemonListViewController {
+    
+    var isLoading: Binder<Bool> {
+        return Binder(self.base) { vc, isLoading in
+            vc.isLoading = isLoading
+        }
     }
 }

@@ -12,7 +12,7 @@ public extension Utilities {
     
     class NetworkManager {
         
-        public func executeRequest<T: Decodable>(url: String, method: String) -> Observable<T> {
+        public func executeRequest<T: Decodable>(url: String, method: String, dataType: T.Type) -> Observable<T> {
             
             return Observable.create { observer -> Disposable in
                 

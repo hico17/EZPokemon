@@ -8,36 +8,49 @@
 import RxSwift
 
 protocol PokemonListProtocol {
-    func getPokemonList(offset: Int) -> Observable<[PokemonListItem]>
+    func getPokemonList(limit: Int, offset: Int) -> Observable<[GetPokemonListItem]>
 }
 
-struct PokemonListViewModel {
+class PokemonListViewModel {
     
     init(pokemonListService: PokemonListProtocol) {
         self.pokemonListService = pokemonListService
     }
     
+    var title = Observable<String>.just("Pokémon")
     var pokemonListItemViewModels = PublishSubject<[PokemonListItemViewModel]>()
-    var error = PublishSubject<Bool>()
+    var message = PublishSubject<Bool>()
     var isLoading = PublishSubject<Bool>()
     
     func fetchPokemonListItemViewModel() {
         isLoading.onNext(true)
-        pokemonListService.getPokemonList(offset: currentOffset).map{$0.map{PokemonListItemViewModel(pokemonListItem: $0)}}.subscribe { event in
-            self.isLoading.onNext(false)
-            switch event {
-            case .next(let viewModels):
-                self.pokemonListItemViewModels.onNext(viewModels)
-            case .error:
-                self.error.onNext(true)
-            default: break
-            }
-        }.disposed(by: disposeBag)
+        pokemonListService
+            .getPokemonList(limit: limit, offset: currentOffset)
+            .map{$0.map{PokemonListItemViewModel(pokemonListItem: $0)}}
+            .subscribe { [weak self] event in
+                guard let self = self else { return }
+                self.isLoading.onNext(false)
+                switch event {
+                case .next(let viewModels):
+                    if !viewModels.isEmpty {
+                        self.currentOffset += self.limit
+                    }
+                    self.pokemonListItemViewModels.onNext(viewModels)
+                case .error(let error):
+                    self.handle(error: error)
+                default: break
+                }
+            }.disposed(by: disposeBag)
     }
     
     // MARK: Private
     
     private let pokemonListService: PokemonListProtocol
     private let disposeBag = DisposeBag()
-    private var currentOffset = 20
+    private let limit = 20
+    private var currentOffset = 0
+    
+    private func handle(error: Error) {
+        
+    }
 }

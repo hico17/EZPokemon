@@ -6,9 +6,18 @@
 //
 
 import UIKit
+import RxSwift
 import Utilities
 
 class PokemonListItemCollectionViewCell: UICollectionViewCell, Reusable {
+    
+    var viewModel: PokemonListItemViewModel? {
+        didSet {
+            viewModel?.name.subscribe(onNext: { name in
+                self.nameLabel.text = name
+                }).disposed(by: disposeBag)
+        }
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -20,7 +29,14 @@ class PokemonListItemCollectionViewCell: UICollectionViewCell, Reusable {
         commonInit()
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        disposeBag = DisposeBag()
+    }
+    
     // MARK: Private
+    
+    private var disposeBag = DisposeBag()
     
     private lazy var nameLabel: UILabel = {
         let label = UILabel()
@@ -42,7 +58,7 @@ extension PokemonListItemCollectionViewCell: CodeDesignable {
     }
     
     func addConstraints() {
-        NSLayoutConstraint.activate([
+        NSLayoutConstraint.activateWithoutResizingMasks([
             nameLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
             nameLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
         ])

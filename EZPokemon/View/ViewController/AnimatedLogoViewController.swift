@@ -34,11 +34,7 @@ class AnimatedLogoViewController: UIViewController {
     
     private var viewModel: AnimatedLogoViewModel
     
-    private lazy var logoImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        return imageView
-    }()
+    private let logoImageView = UIImageView()
     
     private func bindData() {
         

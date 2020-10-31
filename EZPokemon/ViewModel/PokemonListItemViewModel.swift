@@ -6,10 +6,22 @@
 //
 
 import Foundation
+import RxSwift
 
 struct PokemonListItemViewModel {
     
-    init(pokemonListItem: PokemonListItem) {
+    lazy var name = Observable<String>.just(pokemonListItem.name)
+    var image = PublishSubject<UIImage>()
+    
+    init(pokemonListItem: GetPokemonListItem) {
+        self.pokemonListItem = pokemonListItem
+    }
+    
+    func fetchData() {
         
     }
+    
+    // MARK: Private
+    
+    private let pokemonListItem: GetPokemonListItem
 }
