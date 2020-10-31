@@ -48,6 +48,38 @@ public extension Utilities {
             }
         }
         
+        public func executeRequest(url: String, method: String) -> Observable<Data> {
+            
+            return Observable.create { observer -> Disposable in
+                
+                guard let url = URL(string: url) else {
+                    observer.onError(NetworkManagerError.urlCreationError)
+                    return Disposables.create()
+                }
+                
+                var urlRequest = URLRequest(url: url)
+                urlRequest.httpMethod = method
+                
+                let task = URLSession.shared.dataTask(with: urlRequest) { data, response, error in
+                    if let error = error {
+                        return observer.onError(error)
+                    }
+                    guard let data = data else {
+                        return observer.onError(NetworkManagerError.missingData)
+                    }
+                    if let httpResponse = response as? HTTPURLResponse {
+                        if httpResponse.statusCode > 299, httpResponse.statusCode < 200 {
+                            return observer.onError(NetworkManagerError.notValidStatusCode)
+                        }
+                    }
+                    observer.onNext(data)
+                }
+                
+                task.resume()
+                return Disposables.create()
+            }
+        }
+        
         public init() {}
         
         // MARK: Private

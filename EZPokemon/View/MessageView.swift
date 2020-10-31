@@ -79,9 +79,9 @@ class MessageView: UIView {
     
     private let blurEffect = UIBlurEffect(style: UIBlurEffect.Style.dark)
     
-    private lazy var blurredBackgroundView: UIView = {
+    private lazy var blurredBackgroundView: UIVisualEffectView = {
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
-        return blurEffectView.contentView
+        return blurEffectView
     }()
     
     private lazy var messageLabel: UILabel = {
@@ -96,7 +96,7 @@ extension MessageView: CodeDesignable {
     
     func addSubviews() {
         addSubview(blurredBackgroundView)
-        blurredBackgroundView.addSubview(messageLabel)
+        blurredBackgroundView.contentView.addSubview(messageLabel)
     }
     
     func addConstraints() {
@@ -104,7 +104,7 @@ extension MessageView: CodeDesignable {
             blurredBackgroundView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: Constants.blurredBackgroundViewPadding.top),
             blurredBackgroundView.leftAnchor.constraint(equalTo: safeAreaLayoutGuide.leftAnchor, constant: Constants.blurredBackgroundViewPadding.left),
             blurredBackgroundView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: Constants.blurredBackgroundViewPadding.bottom),
-            blurredBackgroundView.rightAnchor.constraint(equalTo: safeAreaLayoutGuide.rightAnchor, constant: Constants.blurredBackgroundViewPadding.right),
+            blurredBackgroundView.rightAnchor.constraint(equalTo: safeAreaLayoutGuide.rightAnchor, constant: -Constants.blurredBackgroundViewPadding.right),
             messageLabel.topAnchor.constraint(equalTo: blurredBackgroundView.topAnchor, constant: Constants.messageLabelPadding.top),
             messageLabel.leftAnchor.constraint(equalTo: blurredBackgroundView.leftAnchor, constant: Constants.messageLabelPadding.left),
             messageLabel.bottomAnchor.constraint(equalTo: blurredBackgroundView.bottomAnchor, constant: Constants.messageLabelPadding.bottom),

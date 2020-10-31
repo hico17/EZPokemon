@@ -19,7 +19,12 @@ class PokemonListViewController: UIViewController {
             }
         }
     }
-
+    
+    init(viewModel: PokemonListViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
     override func loadView() {
         let view = UIView(frame: UIScreen.main.bounds)
         view.backgroundColor = .white
@@ -34,11 +39,6 @@ class PokemonListViewController: UIViewController {
         viewModel.fetchPokemonListItemViewModel()
     }
     
-    init(viewModel: PokemonListViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -51,6 +51,7 @@ class PokemonListViewController: UIViewController {
     private lazy var pokemonCollectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: collectionViewLayout)
         collectionView.backgroundColor = .clear
+        collectionView.alwaysBounceVertical = true
         collectionView.register(PokemonListItemCollectionViewCell.self)
         return collectionView
     }()
@@ -60,6 +61,7 @@ class PokemonListViewController: UIViewController {
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         layout.itemSize = CGSize(width: view.frame.width / 4, height: 100)
         layout.minimumInteritemSpacing = 8
+        layout.scrollDirection = .vertical
         return layout
     }()
     
@@ -72,8 +74,14 @@ class PokemonListViewController: UIViewController {
         viewModel.title.subscribe(onNext: { title in
             self.title = title
         }).disposed(by: disposeBag)
-        viewModel.pokemonListItemViewModels.observe(on: MainScheduler.instance).bind(to: pokemonCollectionView.rx.items(cellIdentifier: PokemonListItemCollectionViewCell.reusableIdentifier, cellType: PokemonListItemCollectionViewCell.self)) { _, viewModel, cell in
+        viewModel.pokemonListItemViewModels.observe(on: MainScheduler.instance).bind(to: pokemonCollectionView.rx.items(cellIdentifier: PokemonListItemCollectionViewCell.reusableIdentifier, cellType: PokemonListItemCollectionViewCell.self)) { index, viewModel, cell in
             cell.viewModel = viewModel
+        }.disposed(by: disposeBag)
+        pokemonCollectionView.rx.willDisplayCell.subscribe { cell, indexPath in
+            let numberOfItems = self.pokemonCollectionView.numberOfItems(inSection: 0)
+            if indexPath.row == numberOfItems-1 {
+                self.viewModel.fetchPokemonListItemViewModel()
+            }
         }.disposed(by: disposeBag)
         viewModel.isLoading.bind(to: rx.isLoading).disposed(by: disposeBag)
     }

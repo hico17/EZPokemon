@@ -10,6 +10,8 @@
 		1FDDB46E52FB1D9259E37EEC /* Pods_EZPokemon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F22054D8DE5C91A670F16A4 /* Pods_EZPokemon.framework */; };
 		C50CC837254D83040098B423 /* PokemonListItemCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C50CC836254D83040098B423 /* PokemonListItemCollectionViewCell.swift */; };
 		C5325F88254DC3E000A4E614 /* GetPokemonList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5325F87254DC3E000A4E614 /* GetPokemonList.swift */; };
+		C5325F8C254DE0AC00A4E614 /* GetPokemonDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5325F8B254DE0AC00A4E614 /* GetPokemonDetail.swift */; };
+		C5325F8F254DE18100A4E614 /* PokemonDetailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5325F8E254DE18100A4E614 /* PokemonDetailService.swift */; };
 		C5670938254CAC7C002473B6 /* PokemonListItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5670937254CAC7C002473B6 /* PokemonListItemViewModel.swift */; };
 		C576E15E254B4B2300B1CE40 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C576E15D254B4B2300B1CE40 /* AppDelegate.swift */; };
 		C576E162254B4B2300B1CE40 /* PokemonListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C576E161254B4B2300B1CE40 /* PokemonListViewController.swift */; };
@@ -32,6 +34,8 @@
 		546BBE1125DBDAE1A4556BDE /* Pods-EZPokemon.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EZPokemon.release.xcconfig"; path = "Target Support Files/Pods-EZPokemon/Pods-EZPokemon.release.xcconfig"; sourceTree = "<group>"; };
 		C50CC836254D83040098B423 /* PokemonListItemCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokemonListItemCollectionViewCell.swift; sourceTree = "<group>"; };
 		C5325F87254DC3E000A4E614 /* GetPokemonList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetPokemonList.swift; sourceTree = "<group>"; };
+		C5325F8B254DE0AC00A4E614 /* GetPokemonDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetPokemonDetail.swift; sourceTree = "<group>"; };
+		C5325F8E254DE18100A4E614 /* PokemonDetailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokemonDetailService.swift; sourceTree = "<group>"; };
 		C5670937254CAC7C002473B6 /* PokemonListItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokemonListItemViewModel.swift; sourceTree = "<group>"; };
 		C576E15A254B4B2300B1CE40 /* EZPokemon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EZPokemon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C576E15D254B4B2300B1CE40 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -128,6 +132,7 @@
 			children = (
 				C576E18C254B767F00B1CE40 /* GetPokemonListItem.swift */,
 				C5325F87254DC3E000A4E614 /* GetPokemonList.swift */,
+				C5325F8B254DE0AC00A4E614 /* GetPokemonDetail.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -181,6 +186,7 @@
 			isa = PBXGroup;
 			children = (
 				C576E19B254B7C7B00B1CE40 /* PokemonListService.swift */,
+				C5325F8E254DE18100A4E614 /* PokemonDetailService.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -308,8 +314,10 @@
 			files = (
 				C5325F88254DC3E000A4E614 /* GetPokemonList.swift in Sources */,
 				C576E179254B4C5B00B1CE40 /* PokemonListCoordinator.swift in Sources */,
+				C5325F8F254DE18100A4E614 /* PokemonDetailService.swift in Sources */,
 				C576E162254B4B2300B1CE40 /* PokemonListViewController.swift in Sources */,
 				C576E1A3254B8E3800B1CE40 /* SceneDelegate.swift in Sources */,
+				C5325F8C254DE0AC00A4E614 /* GetPokemonDetail.swift in Sources */,
 				C576E17C254B4CB300B1CE40 /* AnimatedLogoCoordinator.swift in Sources */,
 				C576E1A6254B93FC00B1CE40 /* AnimatedLogoViewModel.swift in Sources */,
 				C5B30D05254DA017007C183E /* MessageView.swift in Sources */,
