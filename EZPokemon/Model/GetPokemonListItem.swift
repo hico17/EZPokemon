@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct PokemonListItem: Decodable {
-    let id: Int
+struct GetPokemonListItem: Decodable {
     let name: String
+    let url: String
 }
