@@ -29,6 +29,9 @@ public extension Utilities {
                         return observer.onError(NetworkManagerError.generic)
                     }
                     if let error = error {
+                        if (error as NSError).code == -1009 {
+                            return observer.onError(NetworkManagerError.offline)
+                        }
                         return observer.onError(error)
                     }
                     guard let data = data else {

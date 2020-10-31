@@ -6,6 +6,7 @@
 //
 
 import RxSwift
+import Utilities
 
 protocol PokemonListProtocol {
     func getPokemonList(limit: Int, offset: Int) -> Observable<[GetPokemonListItem]>
@@ -15,12 +16,10 @@ class PokemonListViewModel {
     
     var title = Observable<String>.just("Pokémon")
     var pokemonListItemViewModels = BehaviorSubject<[PokemonListItemViewModel]>(value: [])
+    var message = PublishSubject<String>()
     var isLoading = BehaviorSubject<Bool>(value: false)
     
     func fetchPokemonListItemViewModel() {
-        guard let loading = try? isLoading.value(), !loading else {
-            return
-        }
         isLoading.onNext(true)
         pokemonListService
             .getPokemonList(limit: limit, offset: currentOffset)
@@ -46,6 +45,23 @@ class PokemonListViewModel {
             }.disposed(by: disposeBag)
     }
     
+    func didScrollToEnd() {
+        guard let loading = try? isLoading.value(), !loading else {
+            return
+        }
+        fetchPokemonListItemViewModel()
+    }
+    
+    func willShow(viewModelAtIndex index: Int) {
+        if let item = try? pokemonListItemViewModels.value()[index], item.pokemonDetail == nil {
+            item.fetchData()
+        }
+    }
+    
+    func didSelect(viewModel: PokemonListItemViewModel) {
+        // TODO
+    }
+    
     init(pokemonListService: PokemonListProtocol) {
         self.pokemonListService = pokemonListService
     }
@@ -59,6 +75,11 @@ class PokemonListViewModel {
     private var currentOffset = 0
     
     private func handle(error: Error) {
-        
+        switch error {
+        case Utilities.NetworkManager.NetworkManagerError.offline:
+            message.onNext("The connection appear to be offline ☹️.\nTry to switch connection or find a better place 🤗")
+        default:
+            message.onNext("Something has gone wrong ☹️")
+        }
     }
 }

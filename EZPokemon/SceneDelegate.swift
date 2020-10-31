@@ -16,15 +16,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         if let windowScene = scene as? UIWindowScene {
             self.window = UIWindow(windowScene: windowScene)
-            appCoordinator = PokemonListCoordinator(navigationController: UINavigationController())
-            self.window?.rootViewController = appCoordinator?.navigationController
-            self.window?.makeKeyAndVisible()
+            appCoordinator = AppCoordinator()
             appCoordinator?.start()
+//            appCoordinator = PokemonListCoordinator(navigationController: UINavigationController())
+            self.window?.rootViewController = appCoordinator?.rootViewController
+            self.window?.makeKeyAndVisible()
         }
     }
     
     // MARK: Private
     
-    private var appCoordinator: Coordinator?
+    private var appCoordinator: AppCoordinator?
 }
 

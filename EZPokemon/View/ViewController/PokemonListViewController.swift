@@ -14,9 +14,6 @@ class PokemonListViewController: UIViewController {
     
     var isLoading: Bool = false {
         didSet {
-            if isLoading {
-                messageView.showAndHide(message: "Loading")
-            }
         }
     }
     
@@ -27,7 +24,11 @@ class PokemonListViewController: UIViewController {
     
     override func loadView() {
         let view = UIView(frame: UIScreen.main.bounds)
-        view.backgroundColor = .white
+        if #available(iOS 13.0, *) {
+            view.backgroundColor = .systemBackground
+        } else {
+            view.backgroundColor = .white
+        }
         self.view = view
         addSubviews()
         addConstraints()
@@ -35,6 +36,7 @@ class PokemonListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.navigationBar.prefersLargeTitles = true
         bindData()
         viewModel.fetchPokemonListItemViewModel()
     }
@@ -59,8 +61,14 @@ class PokemonListViewController: UIViewController {
     private lazy var collectionViewLayout: UICollectionViewFlowLayout = {
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        layout.itemSize = CGSize(width: view.frame.width / 4, height: 100)
-        layout.minimumInteritemSpacing = 8
+        let numberOfPokemons: CGFloat = 3
+        let spacing: CGFloat = 17
+        let inset = UIEdgeInsets(top: spacing, left: spacing, bottom: spacing, right: spacing)
+        let totalEmptySpace = spacing * (numberOfPokemons - 1) + inset.left + inset.right
+        layout.itemSize = CGSize(width: (view.frame.width - totalEmptySpace) / numberOfPokemons, height: (view.frame.width - totalEmptySpace) / numberOfPokemons)
+        layout.sectionInset = inset
+        layout.minimumLineSpacing = spacing
+        layout.minimumInteritemSpacing = spacing
         layout.scrollDirection = .vertical
         return layout
     }()
@@ -77,13 +85,19 @@ class PokemonListViewController: UIViewController {
         viewModel.pokemonListItemViewModels.observe(on: MainScheduler.instance).bind(to: pokemonCollectionView.rx.items(cellIdentifier: PokemonListItemCollectionViewCell.reusableIdentifier, cellType: PokemonListItemCollectionViewCell.self)) { index, viewModel, cell in
             cell.viewModel = viewModel
         }.disposed(by: disposeBag)
-        pokemonCollectionView.rx.willDisplayCell.subscribe { cell, indexPath in
-            let numberOfItems = self.pokemonCollectionView.numberOfItems(inSection: 0)
-            if indexPath.row == numberOfItems-1 {
-                self.viewModel.fetchPokemonListItemViewModel()
+        pokemonCollectionView.rx.willDisplayCell.subscribe { [weak self] cell, indexPath in
+            self?.viewModel.willShow(viewModelAtIndex: indexPath.row)
+            if let numberOfItems = self?.pokemonCollectionView.numberOfItems(inSection: 0), numberOfItems != 0, indexPath.row == numberOfItems-1 {
+                self?.viewModel.didScrollToEnd()
             }
         }.disposed(by: disposeBag)
+        pokemonCollectionView.rx.modelSelected(PokemonListItemViewModel.self).subscribe(onNext: { [weak self] selectedViewModel in
+            self?.viewModel.didSelect(viewModel: selectedViewModel)
+        }).disposed(by: disposeBag)
         viewModel.isLoading.bind(to: rx.isLoading).disposed(by: disposeBag)
+        viewModel.message.observe(on: MainScheduler.instance).subscribe(onNext: { [weak self] message in
+            self?.messageView.showAndHide(message: message)
+        }).disposed(by: disposeBag)
     }
 }
 
@@ -98,14 +112,13 @@ extension PokemonListViewController: CodeDesignable {
     
     func addConstraints() {
         NSLayoutConstraint.activateWithoutResizingMasks([
-            pokemonCollectionView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 8),
-            pokemonCollectionView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -8),
+            pokemonCollectionView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 0),
+            pokemonCollectionView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: 0),
             pokemonCollectionView.heightAnchor.constraint(equalTo: view.heightAnchor),
             pokemonCollectionView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             messageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             messageView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
             messageView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
-            messageView.heightAnchor.constraint(equalToConstant: 100)
         ])
     }
 }

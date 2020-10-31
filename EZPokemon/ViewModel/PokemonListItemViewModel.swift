@@ -15,23 +15,28 @@ protocol PokemonDetailProtocol {
     func getPokemonImage(url: String) -> Observable<UIImage>
 }
 
-struct PokemonListItemViewModel {
+class PokemonListItemViewModel {
     
-    lazy var name = Observable<String>.just(pokemonListItem.name)
-    var image = PublishSubject<UIImage>()
-    var isLoading = PublishSubject<Bool>()
+    lazy var name = Observable<String>.just(pokemonListItem.name.uppercased())
+    lazy var image = BehaviorSubject<UIImage>(value: UIImage.Named.missingno)
+    var isLoading = BehaviorSubject<Bool>(value: false)
+    
+    var pokemonDetail: GetPokemonDetail?
     
     func fetchData() {
         isLoading.onNext(true)
-        pokemonDetailService.getPokemonDetail(name: pokemonListItem.name).subscribe(onNext: { detail in
-            pokemonDetailService.getPokemonImage(url: detail.sprites.front_default).subscribe { event in
+        pokemonDetailService.getPokemonDetail(name: pokemonListItem.name).subscribe(onNext: { [weak self] pokemonDetail in
+            guard let self = self else { return }
+            self.pokemonDetail = pokemonDetail
+            self.pokemonDetailService.getPokemonImage(url: pokemonDetail.sprites.front_default).subscribe { event in
                 self.isLoading.onNext(false)
                 switch event {
                 case .next(let image):
                     self.image.onNext(image)
-                default: return
+                default:
+                    self.image.onNext(UIImage.Named.missingno)
                 }
-            }.disposed(by: disposeBag)
+            }.disposed(by: self.disposeBag)
         }).disposed(by: disposeBag)
     }
     

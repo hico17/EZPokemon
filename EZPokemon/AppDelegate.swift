@@ -14,10 +14,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         guard #available(iOS 13, *) else {
             window = UIWindow()
-            let coordinator = PokemonListCoordinator(navigationController: UINavigationController())
-            window?.rootViewController = coordinator.navigationController
-            window?.makeKeyAndVisible()
+            let coordinator = AppCoordinator()
+//            let coordinator = PokemonListCoordinator(navigationController: UINavigationController())
             coordinator.start()
+            window?.rootViewController = coordinator.rootViewController
+            window?.makeKeyAndVisible()
             return true
         }
         return true
@@ -27,6 +28,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: Private
     
-    private var appCoordinator: Coordinator?
+    private var appCoordinator: AppCoordinator?
 }
 

@@ -7,12 +7,13 @@
 
 import Foundation
 
-extension Utilities.NetworkManager {
+public extension Utilities.NetworkManager {
     
     enum NetworkManagerError: LocalizedError {
         case urlCreationError
         case missingData
         case notValidStatusCode
+        case offline
         case generic
     }
 }
