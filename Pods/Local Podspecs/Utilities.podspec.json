@@ -1,0 +1,27 @@
+{
+  "name": "Utilities",
+  "version": "0.0.1",
+  "license": {
+    "type": "BSD"
+  },
+  "authors": {
+    "Luca Celiento": ""
+  },
+  "homepage": "https://linkToHomePage",
+  "source": {
+    "git": "",
+    "tag": ""
+  },
+  "summary": "Utility class for iOS",
+  "source_files": "Sources/**/*.{h,m,swift}",
+  "frameworks": "SystemConfiguration",
+  "requires_arc": true,
+  "platforms": {
+    "ios": "11.0"
+  },
+  "dependencies": {
+    "RxSwift": [
+      "6.0.0-rc.1"
+    ]
+  }
+}
