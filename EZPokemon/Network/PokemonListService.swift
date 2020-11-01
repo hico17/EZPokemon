@@ -11,8 +11,8 @@ import Utilities
 
 class PokemonListService: PokemonListProtocol {
     
-    func getPokemonList(limit: Int, offset: Int) -> Observable<[GetPokemonListItem]> {        
-        return networkManager.executeRequest(url: "https://pokeapi.co/api/v2/pokemon/?limit=\(limit)&offset=\(offset)", method: "GET", dataType: GetPokemonList.self).map{$0.results}
+    func getPokemonList(limit: Int, offset: Int) -> Observable<[PokemonListItem]> {        
+        return networkManager.executeRequest(url: "https://pokeapi.co/api/v2/pokemon/?limit=\(limit)&offset=\(offset)", method: "GET", dataType: PokemonList.self).map{$0.results}
     }
     
     private let networkManager = Utilities.NetworkManager()

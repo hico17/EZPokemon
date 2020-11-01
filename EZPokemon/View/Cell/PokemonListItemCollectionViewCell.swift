@@ -86,6 +86,7 @@ class PokemonListItemCollectionViewCell: UICollectionViewCell, Reusable {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         label.textAlignment = .center
+        label.setContentCompressionResistancePriority(.required, for: .vertical)
         return label
     }()
     

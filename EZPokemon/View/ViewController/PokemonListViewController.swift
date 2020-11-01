@@ -58,20 +58,21 @@ class PokemonListViewController: UIViewController {
         return collectionView
     }()
     
-    private lazy var collectionViewLayout: UICollectionViewFlowLayout = {
+    private var collectionViewLayout: UICollectionViewFlowLayout {
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         let numberOfPokemons: CGFloat = 3
         let spacing: CGFloat = 17
         let inset = UIEdgeInsets(top: spacing, left: spacing, bottom: spacing, right: spacing)
         let totalEmptySpace = spacing * (numberOfPokemons - 1) + inset.left + inset.right
-        layout.itemSize = CGSize(width: (view.frame.width - totalEmptySpace) / numberOfPokemons, height: (view.frame.width - totalEmptySpace) / numberOfPokemons)
+        let width = (view.frame.width - totalEmptySpace) / numberOfPokemons
+        layout.itemSize = CGSize(width: width, height: width)
         layout.sectionInset = inset
         layout.minimumLineSpacing = spacing
         layout.minimumInteritemSpacing = spacing
         layout.scrollDirection = .vertical
         return layout
-    }()
+    }
     
     private lazy var messageView: MessageView = {
         let messageView = MessageView(frame: .zero)
@@ -79,9 +80,7 @@ class PokemonListViewController: UIViewController {
     }()
     
     private func bindData() {
-        viewModel.title.subscribe(onNext: { title in
-            self.title = title
-        }).disposed(by: disposeBag)
+        viewModel.title.bind(to: rx.title).disposed(by: disposeBag)
         viewModel.pokemonListItemViewModels.observe(on: MainScheduler.instance).bind(to: pokemonCollectionView.rx.items(cellIdentifier: PokemonListItemCollectionViewCell.reusableIdentifier, cellType: PokemonListItemCollectionViewCell.self)) { index, viewModel, cell in
             cell.viewModel = viewModel
         }.disposed(by: disposeBag)

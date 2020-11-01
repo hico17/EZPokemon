@@ -9,7 +9,11 @@ import RxSwift
 import Utilities
 
 protocol PokemonListProtocol {
-    func getPokemonList(limit: Int, offset: Int) -> Observable<[GetPokemonListItem]>
+    func getPokemonList(limit: Int, offset: Int) -> Observable<[PokemonListItem]>
+}
+
+protocol PokemonListViewModelDelegate: class {
+    func pokemonListViewModel(_ pokemonListViewModel: PokemonListViewModel, didSelectItem item: PokemonListItemViewModel)
 }
 
 class PokemonListViewModel {
@@ -18,6 +22,8 @@ class PokemonListViewModel {
     var pokemonListItemViewModels = BehaviorSubject<[PokemonListItemViewModel]>(value: [])
     var message = PublishSubject<String>()
     var isLoading = BehaviorSubject<Bool>(value: false)
+    
+    var delegate: PokemonListViewModelDelegate?
     
     func fetchPokemonListItemViewModel() {
         isLoading.onNext(true)
@@ -59,7 +65,7 @@ class PokemonListViewModel {
     }
     
     func didSelect(viewModel: PokemonListItemViewModel) {
-        // TODO
+        delegate?.pokemonListViewModel(self, didSelectItem: viewModel)
     }
     
     init(pokemonListService: PokemonListProtocol) {

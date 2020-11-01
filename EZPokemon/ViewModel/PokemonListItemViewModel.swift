@@ -10,18 +10,20 @@ import RxSwift
 import Utilities
 
 protocol PokemonDetailProtocol {
-    func getPokemonDetail(id: Int) -> Observable<GetPokemonDetail>
-    func getPokemonDetail(name: String) -> Observable<GetPokemonDetail>
+    func getPokemonDetail(id: Int) -> Observable<PokemonDetail>
+    func getPokemonDetail(name: String) -> Observable<PokemonDetail>
     func getPokemonImage(url: String) -> Observable<UIImage>
 }
 
 class PokemonListItemViewModel {
     
+    let pokemonListItem: PokemonListItem
+
     lazy var name = Observable<String>.just(pokemonListItem.name.uppercased())
     lazy var image = BehaviorSubject<UIImage>(value: UIImage.Named.missingno)
     var isLoading = BehaviorSubject<Bool>(value: false)
     
-    var pokemonDetail: GetPokemonDetail?
+    var pokemonDetail: PokemonDetail?
     
     func fetchData() {
         isLoading.onNext(true)
@@ -40,7 +42,7 @@ class PokemonListItemViewModel {
         }).disposed(by: disposeBag)
     }
     
-    init(pokemonListItem: GetPokemonListItem, pokemonDetailService: PokemonDetailProtocol) {
+    init(pokemonListItem: PokemonListItem, pokemonDetailService: PokemonDetailProtocol) {
         self.pokemonListItem = pokemonListItem
         self.pokemonDetailService = pokemonDetailService
     }
@@ -48,6 +50,5 @@ class PokemonListItemViewModel {
     // MARK: Private
     
     private let disposeBag = DisposeBag()
-    private let pokemonListItem: GetPokemonListItem
     private let pokemonDetailService: PokemonDetailProtocol
 }

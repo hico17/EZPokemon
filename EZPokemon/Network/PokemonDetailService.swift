@@ -11,12 +11,12 @@ import Utilities
 
 class PokemonDetailService: PokemonDetailProtocol {
 
-    func getPokemonDetail(id: Int) -> Observable<GetPokemonDetail> {
-        return networkManager.executeRequest(url: "https://pokeapi.co/api/v2/pokemon/\(id)", method: "GET", dataType: GetPokemonDetail.self)
+    func getPokemonDetail(id: Int) -> Observable<PokemonDetail> {
+        return networkManager.executeRequest(url: "https://pokeapi.co/api/v2/pokemon/\(id)", method: "GET", dataType: PokemonDetail.self)
     }
     
-    func getPokemonDetail(name: String) -> Observable<GetPokemonDetail> {
-        return networkManager.executeRequest(url: "https://pokeapi.co/api/v2/pokemon/\(name)", method: "GET", dataType: GetPokemonDetail.self)
+    func getPokemonDetail(name: String) -> Observable<PokemonDetail> {
+        return networkManager.executeRequest(url: "https://pokeapi.co/api/v2/pokemon/\(name)", method: "GET", dataType: PokemonDetail.self)
     }
     
     func getPokemonImage(url: String) -> Observable<UIImage> {
