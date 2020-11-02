@@ -12,6 +12,9 @@ import Utilities
 protocol PokemonDetailProtocol {
     func getPokemonDetail(id: Int) -> Observable<PokemonDetail>
     func getPokemonDetail(name: String) -> Observable<PokemonDetail>
+}
+
+protocol PokemonSpriteProtocol {
     func getPokemonImage(url: String) -> Observable<UIImage>
 }
 
@@ -30,7 +33,7 @@ class PokemonListItemViewModel {
         pokemonDetailService.getPokemonDetail(name: pokemonListItem.name).subscribe(onNext: { [weak self] pokemonDetail in
             guard let self = self else { return }
             self.pokemonDetail = pokemonDetail
-            self.pokemonDetailService.getPokemonImage(url: pokemonDetail.sprites.front_default).subscribe { event in
+            self.pokemonSpriteService.getPokemonImage(url: pokemonDetail.sprites.front_default).subscribe { event in
                 self.isLoading.onNext(false)
                 switch event {
                 case .next(let image):
@@ -42,13 +45,15 @@ class PokemonListItemViewModel {
         }).disposed(by: disposeBag)
     }
     
-    init(pokemonListItem: PokemonListItem, pokemonDetailService: PokemonDetailProtocol) {
+    init(pokemonListItem: PokemonListItem, pokemonDetailService: PokemonDetailProtocol, pokemonSpriteService: PokemonSpriteProtocol) {
         self.pokemonListItem = pokemonListItem
         self.pokemonDetailService = pokemonDetailService
+        self.pokemonSpriteService = pokemonSpriteService
     }
     
     // MARK: Private
     
     private let disposeBag = DisposeBag()
     private let pokemonDetailService: PokemonDetailProtocol
+    private let pokemonSpriteService: PokemonSpriteProtocol
 }

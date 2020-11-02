@@ -83,15 +83,10 @@ class MessageView: UIView {
         blurEffectView.layer.masksToBounds = true
         return blurEffectView
     }()
-    
-    private lazy var vibrancyEffectView: UIVisualEffectView = {
-        let vibrancyEffect = UIVibrancyEffect(blurEffect: blurEffect)
-        let vibrancyView = UIVisualEffectView(effect: vibrancyEffect)
-        return vibrancyView
-    }()
-    
+
     private lazy var messageLabel: UILabel = {
         let label = UILabel()
+        label.textColor = .white
         label.numberOfLines = 0
         label.font = UIFont.systemFont(ofSize: 17, weight: .medium)
         return label
@@ -104,13 +99,11 @@ extension MessageView: CodeDesignable {
     
     func addSubviews() {
         addSubview(blurredBackgroundView)
-        blurredBackgroundView.contentView.addSubview(vibrancyEffectView)
-        vibrancyEffectView.contentView.addSubview(messageLabel)
+        blurredBackgroundView.contentView.addSubview(messageLabel)
     }
     
     func addConstraints() {
-        vibrancyEffectView.constraint(to: blurredBackgroundView)
-        messageLabel.constraint(to: vibrancyEffectView, padding: Constants.messageLabelPadding)
+        messageLabel.constraint(to: blurredBackgroundView, padding: Constants.messageLabelPadding)
         NSLayoutConstraint.activateWithoutResizingMasks([
             blurredBackgroundView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: Constants.blurredBackgroundViewPadding.top),
             blurredBackgroundView.leftAnchor.constraint(equalTo: safeAreaLayoutGuide.leftAnchor, constant: Constants.blurredBackgroundViewPadding.left),

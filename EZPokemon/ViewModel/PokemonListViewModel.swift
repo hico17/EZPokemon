@@ -29,7 +29,7 @@ class PokemonListViewModel {
         isLoading.onNext(true)
         pokemonListService
             .getPokemonList(limit: limit, offset: currentOffset)
-            .map{$0.map{PokemonListItemViewModel(pokemonListItem: $0, pokemonDetailService: self.pokemonDetailService)}}
+            .map{$0.map{PokemonListItemViewModel(pokemonListItem: $0, pokemonDetailService: self.pokemonDetailService, pokemonSpriteService: self.pokemonSpriteService)}}
             .subscribe { [weak self] event in
                 guard let self = self else { return }
                 self.isLoading.onNext(false)
@@ -68,14 +68,17 @@ class PokemonListViewModel {
         delegate?.pokemonListViewModel(self, didSelectItem: viewModel)
     }
     
-    init(pokemonListService: PokemonListProtocol) {
+    init(pokemonListService: PokemonListProtocol, pokemonDetailService: PokemonDetailProtocol, pokemonSpriteService: PokemonSpriteProtocol) {
         self.pokemonListService = pokemonListService
+        self.pokemonDetailService = pokemonDetailService
+        self.pokemonSpriteService = pokemonSpriteService
     }
     
     // MARK: Private
     
     private let pokemonListService: PokemonListProtocol
-    private let pokemonDetailService = PokemonDetailService()
+    private let pokemonDetailService: PokemonDetailProtocol
+    private let pokemonSpriteService: PokemonSpriteProtocol
     private let disposeBag = DisposeBag()
     private let limit = 20
     private var currentOffset = 0

@@ -14,7 +14,7 @@ class PokemonListCoordinator: Coordinator {
     var navigationController: UINavigationController
     
     func start() {
-        let viewModel = PokemonListViewModel(pokemonListService: pokemonListService)
+        let viewModel = PokemonListViewModel(pokemonListService: pokemonListService, pokemonDetailService: pokemonDetailService, pokemonSpriteService: pokemonSpriteService)
         viewModel.delegate = self
         let pokemonListViewController = PokemonListViewController(viewModel: viewModel)
         navigationController.show(pokemonListViewController, sender: nil)
@@ -25,6 +25,8 @@ class PokemonListCoordinator: Coordinator {
     }
     
     private let pokemonListService = PokemonListService()
+    private let pokemonDetailService = PokemonDetailService()
+    private let pokemonSpriteService = PokemonSpriteService()
 }
 
 // MARK: - PokemonListViewModelDelegate

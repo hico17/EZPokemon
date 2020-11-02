@@ -19,20 +19,5 @@ class PokemonDetailService: PokemonDetailProtocol {
         return networkManager.executeRequest(url: "https://pokeapi.co/api/v2/pokemon/\(name)", method: "GET", dataType: PokemonDetail.self)
     }
     
-    func getPokemonImage(url: String) -> Observable<UIImage> {
-        return Observable.create { observer -> Disposable in
-            return self.networkManager.executeRequest(url: url, method: "GET").subscribe { event in
-                switch event {
-                case .next(let data):
-                    observer.onNext(UIImage(data: data) ?? UIImage())
-                case .error(let error):
-                    observer.onError(error)
-                case .completed:
-                    observer.onCompleted()
-                }
-            }
-        }
-    }
-    
     private let networkManager = Utilities.NetworkManager()
 }

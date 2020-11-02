@@ -9,13 +9,25 @@ import Foundation
 
 struct PokemonDetail: Decodable {
     let name: String
+    let order: Int
     let height: Double
     let weight: Double
+    let abilities: [PokemonAbility]
     let types: [PokemonType]
     let sprites: PokemonSprites
     let game_indices: [GameIndex]
     let moves: [PokemonMove]
     let stats: [PokemonStat]
+}
+
+struct PokemonAbility: Decodable {
+    let is_hidden: Bool
+    let ability: Ability
+    
+    struct Ability: Decodable {
+        let name: String
+        let url: String
+    }
 }
 
 struct PokemonSprites: Decodable {

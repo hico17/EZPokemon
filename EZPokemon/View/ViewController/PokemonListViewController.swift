@@ -60,7 +60,6 @@ class PokemonListViewController: UIViewController {
     
     private var collectionViewLayout: UICollectionViewFlowLayout {
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         let numberOfPokemons: CGFloat = 3
         let spacing: CGFloat = 17
         let inset = UIEdgeInsets(top: spacing, left: spacing, bottom: spacing, right: spacing)

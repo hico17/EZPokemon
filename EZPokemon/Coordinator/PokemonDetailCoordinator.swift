@@ -14,7 +14,7 @@ struct PokemonDetailCoordinator: Coordinator {
     var navigationController: UINavigationController
     
     func start() {
-        let viewModel = PokemonDetailViewModel(pokemonListItem: pokemonListItem, pokemonDetail: pokemonDetail, pokemonDetailService: PokemonDetailService())
+        let viewModel = PokemonDetailViewModel(pokemonListItem: pokemonListItem, pokemonDetail: pokemonDetail, pokemonDetailService: PokemonDetailService(), pokemonSpriteService: PokemonSpriteService())
         let pokemonDetailViewController = PokemonDetailViewController(viewModel: viewModel)
         navigationController.showDetailViewController(pokemonDetailViewController, sender: nil)
     }
