@@ -40,17 +40,23 @@ class HeaderTableViewCell: UITableViewCell, Reusable {
     private enum Constants {
         static let padding = UIEdgeInsets(top: 8, left: 17, bottom: -8, right: -17)
     }
+    
     private var disposeBag = DisposeBag()
 
     private lazy var headerLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 17, weight: .light)
+        label.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
         return label
     }()
     
     private func commonInit() {
         addSubviews()
         addConstraints()
+        if #available(iOS 13.0, *) {
+            backgroundColor = .systemGroupedBackground
+        } else {
+            backgroundColor = .groupTableViewBackground
+        }
     }
 }
 

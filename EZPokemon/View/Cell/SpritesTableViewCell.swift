@@ -36,7 +36,6 @@ class SpritesTableViewCell: UITableViewCell, Reusable {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-//        collectionView.collectionViewLayout.invalidateLayout()
         collectionView.collectionViewLayout = collectionViewFlowLayout
     }
     
@@ -45,7 +44,7 @@ class SpritesTableViewCell: UITableViewCell, Reusable {
     private var disposeBag = DisposeBag()
     
     private lazy var collectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: bounds, collectionViewLayout: collectionViewFlowLayout)
+        let collectionView = UICollectionView(frame: bounds, collectionViewLayout: UICollectionViewFlowLayout())
         collectionView.backgroundColor = .clear
         collectionView.alwaysBounceHorizontal = true
         collectionView.register(ImageCollectionViewCell.self)
@@ -54,12 +53,15 @@ class SpritesTableViewCell: UITableViewCell, Reusable {
     
     private var collectionViewFlowLayout: UICollectionViewFlowLayout {
         let collectionViewLayout = UICollectionViewFlowLayout()
-        let padding: CGFloat = 8
-        collectionViewLayout.sectionInset = UIEdgeInsets(top: padding, left: padding, bottom: padding, right: padding)
-        let height = bounds.height - collectionViewLayout.sectionInset.top - collectionViewLayout.sectionInset.bottom
-        collectionViewLayout.itemSize = CGSize(width: height, height: height)
-        collectionViewLayout.minimumInteritemSpacing = padding
-        collectionViewLayout.minimumLineSpacing = padding
+        let height = bounds.height
+        let width = height
+        collectionViewLayout.itemSize = CGSize(width: width, height: height)
+        let numberOfItems = 4
+        let totalItemsWidth: CGFloat = CGFloat(numberOfItems) * height
+        let horizontalInset: CGFloat = (collectionView.bounds.width - totalItemsWidth) / 2
+        collectionViewLayout.sectionInset = UIEdgeInsets(top: 0, left: horizontalInset, bottom: 0, right: horizontalInset)
+        collectionViewLayout.minimumInteritemSpacing = 0
+        collectionViewLayout.minimumLineSpacing = 0
         collectionViewLayout.scrollDirection = .horizontal
         return collectionViewLayout
     }
@@ -79,6 +81,6 @@ extension SpritesTableViewCell: CodeDesignable {
     }
     
     func addConstraints() {
-        collectionView.constraint(to: self.contentView)
+        collectionView.constraint(to: contentView)
     }
 }

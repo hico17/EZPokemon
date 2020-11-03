@@ -13,7 +13,6 @@ class InformationsTableViewCell: UITableViewCell, Reusable {
     
     var viewModel: InformationsViewModel? {
         didSet {
-            viewModel?.image.bind(to: defaultSpriteImageView.rx.image).disposed(by: disposeBag)
             viewModel?.order.bind(to: orderValueLabel.rx.text).disposed(by: disposeBag)
             viewModel?.weight.bind(to: weightValueLabel.rx.text).disposed(by: disposeBag)
             viewModel?.height.bind(to: heightValueLabel.rx.text).disposed(by: disposeBag)
@@ -38,34 +37,23 @@ class InformationsTableViewCell: UITableViewCell, Reusable {
     // MARK: - Private
     
     private enum Constants {
-        static let labelFont = UIFont.systemFont(ofSize: 17, weight: .medium)
-        static let labelWidth: CGFloat = 70
-        static let labelValueFont = UIFont.systemFont(ofSize: 17, weight: .semibold)
+        static let labelFont = UIFont.systemFont(ofSize: 15, weight: .light)
+        static let labelValueFont = UIFont.systemFont(ofSize: 20, weight: .semibold)
     }
     
     private var disposeBag = DisposeBag()
     
-    private lazy var defaultSpriteImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        return imageView
-    }()
-    
-    private lazy var labelsBackgroundView: UIView = {
-        let view = UIView()
-        return view
-    }()
-    
     private lazy var labelsStackView: UIStackView = {
         let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.distribution = .fill
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.distribution = .fillEqually
         return stackView
     }()
     
     private lazy var orderLabel: UILabel = {
         let label = UILabel()
-        label.text = "Order"
+        label.text = "ORDER"
         label.font = Constants.labelFont
         return label
     }()
@@ -78,14 +66,15 @@ class InformationsTableViewCell: UITableViewCell, Reusable {
     
     private lazy var orderStackView: UIStackView = {
         let stackView = UIStackView()
-        stackView.axis = .horizontal
+        stackView.axis = .vertical
+        stackView.alignment = .center
         stackView.distribution = .fill
         return stackView
     }()
     
     private lazy var weightLabel: UILabel = {
         let label = UILabel()
-        label.text = "Weight"
+        label.text = "WEIGHT"
         label.font = Constants.labelFont
         return label
     }()
@@ -98,7 +87,8 @@ class InformationsTableViewCell: UITableViewCell, Reusable {
     
     private lazy var weightStackView: UIStackView = {
         let stackView = UIStackView()
-        stackView.axis = .horizontal
+        stackView.axis = .vertical
+        stackView.alignment = .center
         stackView.distribution = .fill
         return stackView
     }()
@@ -118,7 +108,8 @@ class InformationsTableViewCell: UITableViewCell, Reusable {
     
     private lazy var heightStackView: UIStackView = {
         let stackView = UIStackView()
-        stackView.axis = .horizontal
+        stackView.axis = .vertical
+        stackView.alignment = .center
         stackView.distribution = .fill
         return stackView
     }()
@@ -126,11 +117,6 @@ class InformationsTableViewCell: UITableViewCell, Reusable {
     private func commonInit() {
         addSubviews()
         addConstraints()
-        if #available(iOS 13.0, *) {
-            backgroundColor = .systemGroupedBackground
-        } else {
-            backgroundColor = .groupTableViewBackground
-        }
     }
 }
 
@@ -139,7 +125,6 @@ class InformationsTableViewCell: UITableViewCell, Reusable {
 extension InformationsTableViewCell: CodeDesignable {
     
     func addSubviews() {
-        contentView.addSubview(defaultSpriteImageView)
         contentView.addSubview(labelsStackView)
         orderStackView.addArrangedSubview(orderLabel)
         orderStackView.addArrangedSubview(orderValueLabel)
@@ -153,16 +138,6 @@ extension InformationsTableViewCell: CodeDesignable {
     }
     
     func addConstraints() {
-        NSLayoutConstraint.activateWithoutResizingMasks([
-            defaultSpriteImageView.leftAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.leftAnchor, constant: 17),
-            defaultSpriteImageView.rightAnchor.constraint(equalTo: labelsStackView.leftAnchor, constant: -17),
-            defaultSpriteImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            defaultSpriteImageView.widthAnchor.constraint(equalToConstant: 100),
-            labelsStackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            labelsStackView.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -17),
-            orderLabel.widthAnchor.constraint(equalToConstant: Constants.labelWidth),
-            weightLabel.widthAnchor.constraint(equalToConstant: Constants.labelWidth),
-            heightLabel.widthAnchor.constraint(equalToConstant: Constants.labelWidth)
-        ])
+        labelsStackView.constraint(to: contentView)
     }
 }

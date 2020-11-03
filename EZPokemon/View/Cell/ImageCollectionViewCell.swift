@@ -54,6 +54,6 @@ extension ImageCollectionViewCell: CodeDesignable {
     }
     
     func addConstraints() {
-        imageView.constraint(to: contentView)
+        imageView.constraint(to: contentView, padding: UIEdgeInsets(top: 8, left: 8, bottom: -8, right: -8))
     }
 }

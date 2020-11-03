@@ -11,13 +11,19 @@ import RxSwift
 class PokemonDetailViewModel {
     
     enum DataSource {
+        case image(viewModel: SpriteViewModel)
         case header(header: String)
         case informations(viewModel: InformationsViewModel)
         case sprites(viewModel: SpritesViewModel)
         case abilities(viewModel: AbilitiesViewModel)
+        case stats(viewModel: StatsViewModel)
     }
+    
+//    let types: [PokemonType]
+//    let game_indices: [GameIndex]
+//    let moves: [PokemonMove]
 
-    lazy var name = Observable<String>.just(pokemonListItem.name.uppercased())
+    lazy var name = Observable<String>.just(pokemonListItem.name.capitalized)
     var message = PublishSubject<String>()
     var dataSource = BehaviorSubject<[DataSource]>(value: [])
         
@@ -36,10 +42,12 @@ class PokemonDetailViewModel {
             }.disposed(by: disposeBag)
         }
         dataSource.onNext([
-            .informations(viewModel: InformationsViewModel(pokemonDetail: pokemonDetail, pokemonSpriteService: pokemonSpriteService)),
+            .image(viewModel: SpriteViewModel(url: pokemonDetail.sprites.front_default, pokemonSpriteService: pokemonSpriteService)),
+            .informations(viewModel: InformationsViewModel(pokemonDetail: pokemonDetail)),
             .header(header: "SPRITES"),
             .sprites(viewModel: SpritesViewModel(sprites: pokemonDetail.sprites, pokemonSpriteService: pokemonSpriteService)),
-            .header(header: "ABILITIES"),
+            .header(header: "STATS"),
+            .stats(viewModel: StatsViewModel(stats: pokemonDetail.stats)),
             .abilities(viewModel: AbilitiesViewModel(pokemonAbilities: pokemonDetail.abilities))
         ])
     }

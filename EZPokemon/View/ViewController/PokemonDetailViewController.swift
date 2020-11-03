@@ -41,9 +41,12 @@ class PokemonDetailViewController: UIViewController {
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.allowsSelection = false
+        tableView.separatorInset.left = 0
+        tableView.register(SpriteTableViewCell.self)
         tableView.register(InformationsTableViewCell.self)
-        tableView.register(HeaderTableViewCell.self)
         tableView.register(SpritesTableViewCell.self)
+        tableView.register(HeaderTableViewCell.self)
+        tableView.register(StatsTableViewCell.self)
         tableView.tableFooterView = UIView(frame: .zero)
         return tableView
     }()
@@ -52,6 +55,10 @@ class PokemonDetailViewController: UIViewController {
         viewModel.name.bind(to: rx.title).disposed(by: disposeBag)
         viewModel.dataSource.bind(to: tableView.rx.items) { tableView, index, dataSource -> UITableViewCell in
             switch dataSource {
+            case .image(let viewModel):
+                let cell = tableView.dequeueReusableCell(SpriteTableViewCell.self, for: IndexPath(row: index, section: 0))
+                cell.viewModel = viewModel
+                return cell
             case .header(let header):
                 let cell = tableView.dequeueReusableCell(HeaderTableViewCell.self, for: IndexPath(row: index, section: 0))
                 cell.header = header
@@ -66,6 +73,10 @@ class PokemonDetailViewController: UIViewController {
                 return cell
             case .abilities(let viewModel):
                 return UITableViewCell()
+            case .stats(viewModel: let viewModel):
+                let cell = tableView.dequeueReusableCell(StatsTableViewCell.self, for: IndexPath(row: index, section: 0))
+                cell.viewModel = viewModel
+                return cell
             }
         }.disposed(by: disposeBag)
         tableView.rx.setDelegate(self).disposed(by: disposeBag)
@@ -95,9 +106,13 @@ extension PokemonDetailViewController: UITableViewDelegate {
             return UITableView.automaticDimension
         }        
         switch datasource {
+        case .image:
+            return 170
         case .informations:
-            return 120
+            return 100
         case .sprites:
+            return 80
+        case .stats:
             return 100
         default:
             return UITableView.automaticDimension

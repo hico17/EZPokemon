@@ -32,6 +32,7 @@ class PokemonListViewController: UIViewController {
         self.view = view
         addSubviews()
         addConstraints()
+        pokemonCollectionView.collectionViewLayout = collectionViewLayout
     }
     
     override func viewDidLoad() {
@@ -39,6 +40,12 @@ class PokemonListViewController: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         bindData()
         viewModel.fetchPokemonListItemViewModel()
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        pokemonCollectionView.collectionViewLayout.invalidateLayout()
+        pokemonCollectionView.collectionViewLayout = collectionViewLayout
     }
     
     required init?(coder: NSCoder) {
@@ -51,7 +58,7 @@ class PokemonListViewController: UIViewController {
     private let disposeBag = DisposeBag()
     
     private lazy var pokemonCollectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: collectionViewLayout)
+        let collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: UICollectionViewLayout())
         collectionView.backgroundColor = .clear
         collectionView.alwaysBounceVertical = true
         collectionView.register(PokemonListItemCollectionViewCell.self)
@@ -64,7 +71,7 @@ class PokemonListViewController: UIViewController {
         let spacing: CGFloat = 17
         let inset = UIEdgeInsets(top: spacing, left: spacing, bottom: spacing, right: spacing)
         let totalEmptySpace = spacing * (numberOfPokemons - 1) + inset.left + inset.right
-        let width = (view.frame.width - totalEmptySpace) / numberOfPokemons
+        let width = (pokemonCollectionView.frame.width - totalEmptySpace) / numberOfPokemons
         layout.itemSize = CGSize(width: width, height: width)
         layout.sectionInset = inset
         layout.minimumLineSpacing = spacing
