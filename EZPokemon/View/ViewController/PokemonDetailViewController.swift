@@ -42,7 +42,8 @@ class PokemonDetailViewController: UIViewController {
         let tableView = UITableView()
         tableView.allowsSelection = false
         tableView.separatorInset.left = 0
-        tableView.register(SpriteTableViewCell.self)
+        tableView.register(ImageAndTypesTableViewCell.self)
+        tableView.register(DescriptionTableViewCell.self)
         tableView.register(InformationsTableViewCell.self)
         tableView.register(SpritesTableViewCell.self)
         tableView.register(HeaderTableViewCell.self)
@@ -51,17 +52,28 @@ class PokemonDetailViewController: UIViewController {
         return tableView
     }()
     
+    private lazy var activityIndicatorView: UIActivityIndicatorView = {
+        let activityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
+        activityIndicatorView.hidesWhenStopped = true
+        return activityIndicatorView
+    }()
+    
     private func bindData() {
         viewModel.name.bind(to: rx.title).disposed(by: disposeBag)
+        viewModel.isLoading.bind(to: activityIndicatorView.rx.isAnimating).disposed(by: disposeBag)
         viewModel.dataSource.bind(to: tableView.rx.items) { tableView, index, dataSource -> UITableViewCell in
             switch dataSource {
             case .image(let viewModel):
-                let cell = tableView.dequeueReusableCell(SpriteTableViewCell.self, for: IndexPath(row: index, section: 0))
+                let cell = tableView.dequeueReusableCell(ImageAndTypesTableViewCell.self, for: IndexPath(row: index, section: 0))
                 cell.viewModel = viewModel
                 return cell
-            case .header(let header):
+            case .description(let viewModel):
+                let cell = tableView.dequeueReusableCell(DescriptionTableViewCell.self, for: IndexPath(row: index, section: 0))
+                cell.viewModel = viewModel
+                return cell
+            case .header(let viewModel):
                 let cell = tableView.dequeueReusableCell(HeaderTableViewCell.self, for: IndexPath(row: index, section: 0))
-                cell.header = header
+                cell.viewModel = viewModel
                 return cell
             case .informations(let viewModel):
                 let cell = tableView.dequeueReusableCell(InformationsTableViewCell.self, for: IndexPath(row: index, section: 0))
@@ -71,8 +83,6 @@ class PokemonDetailViewController: UIViewController {
                 let cell = tableView.dequeueReusableCell(SpritesTableViewCell.self, for: IndexPath(row: index, section: 0))
                 cell.viewModel = viewModel
                 return cell
-            case .abilities(let viewModel):
-                return UITableViewCell()
             case .stats(viewModel: let viewModel):
                 let cell = tableView.dequeueReusableCell(StatsTableViewCell.self, for: IndexPath(row: index, section: 0))
                 cell.viewModel = viewModel
@@ -89,10 +99,15 @@ extension PokemonDetailViewController: CodeDesignable {
     
     func addSubviews() {
         view.addSubview(tableView)
+        view.addSubview(activityIndicatorView)
     }
     
     func addConstraints() {
         tableView.constraint(to: view)
+        NSLayoutConstraint.activateWithoutResizingMasks([
+            activityIndicatorView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicatorView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
     }
 }
 
@@ -107,11 +122,11 @@ extension PokemonDetailViewController: UITableViewDelegate {
         }        
         switch datasource {
         case .image:
-            return 170
+            return 200
         case .informations:
             return 100
         case .sprites:
-            return 80
+            return 100
         case .stats:
             return 100
         default:

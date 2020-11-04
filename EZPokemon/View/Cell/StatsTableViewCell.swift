@@ -47,6 +47,7 @@ class StatsTableViewCell: UITableViewCell, Reusable {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout())
         collectionView.backgroundColor = .clear
         collectionView.alwaysBounceHorizontal = true
+        collectionView.showsHorizontalScrollIndicator = false
         collectionView.register(StatCollectionViewCell.self)
         return collectionView
     }()

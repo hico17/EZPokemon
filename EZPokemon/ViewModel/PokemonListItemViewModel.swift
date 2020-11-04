@@ -12,6 +12,7 @@ import Utilities
 protocol PokemonDetailProtocol {
     func getPokemonDetail(id: Int) -> Observable<PokemonDetail>
     func getPokemonDetail(name: String) -> Observable<PokemonDetail>
+    func getPokemonSpeciesDetail(name: String) -> Observable<PokemonSpeciesDetail>
 }
 
 protocol PokemonSpriteProtocol {

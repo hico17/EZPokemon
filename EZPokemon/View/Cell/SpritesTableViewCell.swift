@@ -47,6 +47,7 @@ class SpritesTableViewCell: UITableViewCell, Reusable {
         let collectionView = UICollectionView(frame: bounds, collectionViewLayout: UICollectionViewFlowLayout())
         collectionView.backgroundColor = .clear
         collectionView.alwaysBounceHorizontal = true
+        collectionView.showsHorizontalScrollIndicator = false
         collectionView.register(ImageCollectionViewCell.self)
         return collectionView
     }()

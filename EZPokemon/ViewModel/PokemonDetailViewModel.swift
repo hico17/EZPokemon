@@ -11,23 +11,25 @@ import RxSwift
 class PokemonDetailViewModel {
     
     enum DataSource {
-        case image(viewModel: SpriteViewModel)
-        case header(header: String)
+        case image(viewModel: ImageAndTypeViewModel)
+        case header(viewModel: HeaderViewModel)
+        case description(viewModel: DescriptionViewModel)
         case informations(viewModel: InformationsViewModel)
         case sprites(viewModel: SpritesViewModel)
-        case abilities(viewModel: AbilitiesViewModel)
+//        case abilities(viewModel: AbilitiesViewModel)
         case stats(viewModel: StatsViewModel)
     }
     
-//    let types: [PokemonType]
 //    let game_indices: [GameIndex]
 //    let moves: [PokemonMove]
 
     lazy var name = Observable<String>.just(pokemonListItem.name.capitalized)
     var message = PublishSubject<String>()
     var dataSource = BehaviorSubject<[DataSource]>(value: [])
+    var isLoading = PublishSubject<Bool>()
         
     func fetchData() {
+        isLoading.onNext(true)
         guard let pokemonDetail = pokemonDetail else {
             return pokemonDetailService.getPokemonDetail(name: pokemonListItem.name).subscribe { [weak self] event in
                 guard let self = self else { return }
@@ -36,20 +38,32 @@ class PokemonDetailViewModel {
                     self.pokemonDetail = detail
                     self.fetchData()
                 case .error:
+                    self.isLoading.onNext(false)
                     self.message.onNext("Error occurred, try again later.")
                 default: break
                 }
             }.disposed(by: disposeBag)
         }
-        dataSource.onNext([
-            .image(viewModel: SpriteViewModel(url: pokemonDetail.sprites.front_default, pokemonSpriteService: pokemonSpriteService)),
-            .informations(viewModel: InformationsViewModel(pokemonDetail: pokemonDetail)),
-            .header(header: "SPRITES"),
-            .sprites(viewModel: SpritesViewModel(sprites: pokemonDetail.sprites, pokemonSpriteService: pokemonSpriteService)),
-            .header(header: "STATS"),
-            .stats(viewModel: StatsViewModel(stats: pokemonDetail.stats)),
-            .abilities(viewModel: AbilitiesViewModel(pokemonAbilities: pokemonDetail.abilities))
-        ])
+        pokemonDetailService.getPokemonSpeciesDetail(name: pokemonListItem.name).subscribe { [weak self] event in
+            guard let self = self else { return }
+            self.isLoading.onNext(false)
+            switch event {
+            case .next(let pokemonSpeciesDetail):
+                self.dataSource.onNext([
+                    .image(viewModel: ImageAndTypeViewModel(url: pokemonDetail.sprites.front_default, types: pokemonDetail.types, pokemonSpriteService: self.pokemonSpriteService)),
+                    .header(viewModel: HeaderViewModel(header: "DESCRIPTION", color: pokemonSpeciesDetail.color)),
+                    .description(viewModel: DescriptionViewModel(pokemonSpeciesDetail: pokemonSpeciesDetail)),
+                    .informations(viewModel: InformationsViewModel(pokemonDetail: pokemonDetail)),
+                    .header(viewModel: HeaderViewModel(header: "SPRITES", color: pokemonSpeciesDetail.color)),
+                    .sprites(viewModel: SpritesViewModel(sprites: pokemonDetail.sprites, pokemonSpriteService: self.pokemonSpriteService)),
+                    .header(viewModel: HeaderViewModel(header: "STATS", color: pokemonSpeciesDetail.color)),
+                    .stats(viewModel: StatsViewModel(stats: pokemonDetail.stats))
+                ])
+            case .error:
+                self.message.onNext("Error occurred, try again later.")
+            default: break
+            }
+        }.disposed(by: disposeBag)
     }
     
     init(pokemonListItem: PokemonListItem, pokemonDetail: PokemonDetail?, pokemonDetailService: PokemonDetailProtocol, pokemonSpriteService: PokemonSpriteProtocol) {

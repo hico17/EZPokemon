@@ -35,6 +35,11 @@ class StatCollectionViewCell: UICollectionViewCell, Reusable {
     
     // MARK: Private
     
+    private enum Constants {
+        static let labelFont = UIFont.systemFont(ofSize: 15, weight: .light)
+        static let labelValueFont = UIFont.systemFont(ofSize: 20, weight: .semibold)
+    }
+    
     private var disposeBag = DisposeBag()
     
     private lazy var shadowView: UIView = {
@@ -57,17 +62,21 @@ class StatCollectionViewCell: UICollectionViewCell, Reusable {
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.distribution = .fill
+        stackView.alignment = .center
         return stackView
     }()
     
     private lazy var nameLabel: UILabel = {
         let label = UILabel()
+        label.numberOfLines = 0
+        label.textAlignment = .center
+        label.font = Constants.labelFont
         return label
     }()
     
     private lazy var valueLabel: UILabel = {
         let label = UILabel()
+        label.font = Constants.labelValueFont
         return label
     }()
     
@@ -93,9 +102,7 @@ extension StatCollectionViewCell: CodeDesignable {
         shadowView.constraint(to: contentView)
         roundedView.constraint(to: shadowView)
         NSLayoutConstraint.activateWithoutResizingMasks([
-            stackView.topAnchor.constraint(lessThanOrEqualTo: roundedView.topAnchor, constant: 4),
             stackView.leftAnchor.constraint(lessThanOrEqualTo: roundedView.leftAnchor, constant: 4),
-            stackView.bottomAnchor.constraint(lessThanOrEqualTo: roundedView.bottomAnchor, constant: -4),
             stackView.rightAnchor.constraint(lessThanOrEqualTo: roundedView.rightAnchor, constant: -4),
             stackView.centerXAnchor.constraint(equalTo: roundedView.centerXAnchor),
             stackView.centerYAnchor.constraint(equalTo: roundedView.centerYAnchor)

@@ -19,5 +19,9 @@ class PokemonDetailService: PokemonDetailProtocol {
         return networkManager.executeRequest(url: "https://pokeapi.co/api/v2/pokemon/\(name)", method: "GET", dataType: PokemonDetail.self)
     }
     
+    func getPokemonSpeciesDetail(name: String) -> Observable<PokemonSpeciesDetail> {
+        return networkManager.executeRequest(url: "https://pokeapi.co/api/v2/pokemon-species/\(name)", method: "GET", dataType: PokemonSpeciesDetail.self)
+    }
+    
     private let networkManager = Utilities.NetworkManager()
 }

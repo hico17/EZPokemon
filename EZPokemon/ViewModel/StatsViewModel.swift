@@ -10,13 +10,9 @@ import RxSwift
 
 struct StatsViewModel {
     
-    lazy var viewModels = Observable<[StatViewModel]>.just(stats.map{StatViewModel(stat: $0)})
+    let viewModels: Observable<[StatViewModel]>
     
     init(stats: [PokemonStat]) {
-        self.stats = stats
+        self.viewModels = .just(stats.map{StatViewModel(stat: $0)})
     }
-    
-    // MARK: - Private
-    
-    private let stats: [PokemonStat]
 }

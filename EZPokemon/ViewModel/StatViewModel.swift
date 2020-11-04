@@ -10,7 +10,7 @@ import RxSwift
 
 struct StatViewModel {
     
-    lazy var name = Observable<String>.just(stat.stat.name)
+    lazy var name = Observable<String>.just(getStatName())
     lazy var baseStat = Observable<String>.just(String(stat.base_stat))
     
     init(stat: PokemonStat) {
@@ -18,4 +18,8 @@ struct StatViewModel {
     }
     
     private let stat: PokemonStat
+    
+    private func getStatName() -> String {
+        return stat.stat.name.split(separator: "-").map{String($0)}.joined(separator: " ").uppercased()
+    }
 }

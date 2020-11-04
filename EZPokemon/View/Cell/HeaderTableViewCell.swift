@@ -11,18 +11,25 @@ import RxSwift
 
 class HeaderTableViewCell: UITableViewCell, Reusable {
     
-    var header: String? {
-        get {
-            headerLabel.text
-        }
-        set {
-            headerLabel.text = newValue
+    var viewModel: HeaderViewModel? {
+        didSet {
+            viewModel?.header.bind(to: headerLabel.rx.text).disposed(by: disposeBag)
+            viewModel?.color.bind(to: rx.backgroundColor).disposed(by: disposeBag)
+            viewModel?.color.subscribe(onNext: { [weak self] color in
+                self?.headerLabel.textColor = color.isLight ? .black : .white
+            }).disposed(by: disposeBag)
+            
         }
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
         disposeBag = DisposeBag()
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        headerLabel.textColor = backgroundColor?.isLight ?? true ? .black : .white
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -52,11 +59,6 @@ class HeaderTableViewCell: UITableViewCell, Reusable {
     private func commonInit() {
         addSubviews()
         addConstraints()
-        if #available(iOS 13.0, *) {
-            backgroundColor = .systemGroupedBackground
-        } else {
-            backgroundColor = .groupTableViewBackground
-        }
     }
 }
 
