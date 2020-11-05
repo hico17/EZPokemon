@@ -49,18 +49,39 @@ class PokemonDetailViewModel {
             self.isLoading.onNext(false)
             switch event {
             case .next(let pokemonSpeciesDetail):
-                self.dataSource.onNext([
+                var data: [DataSource] = [
                     .image(viewModel: ImageAndTypeViewModel(url: pokemonDetail.sprites.front_default, types: pokemonDetail.types, pokemonSpriteService: self.pokemonSpriteService)),
                     .header(viewModel: HeaderViewModel(header: "DESCRIPTION", color: pokemonSpeciesDetail.color)),
                     .description(viewModel: DescriptionViewModel(pokemonSpeciesDetail: pokemonSpeciesDetail)),
                     .informations(viewModel: InformationsViewModel(pokemonDetail: pokemonDetail)),
-                    .header(viewModel: HeaderViewModel(header: "SPRITES", color: pokemonSpeciesDetail.color)),
-                    .sprites(viewModel: SpritesViewModel(sprites: pokemonDetail.sprites, pokemonSpriteService: self.pokemonSpriteService)),
+                ]
+                if !pokemonDetail.sprites.isEmpty {
+                    data.append(contentsOf: [
+                        .header(viewModel: HeaderViewModel(header: "SPRITES", color: pokemonSpeciesDetail.color)),
+                        .sprites(viewModel: SpritesViewModel(sprites: pokemonDetail.sprites, pokemonSpriteService: self.pokemonSpriteService))
+                    ])
+                }
+                data.append(contentsOf: [
                     .header(viewModel: HeaderViewModel(header: "STATS", color: pokemonSpeciesDetail.color)),
                     .stats(viewModel: StatsViewModel(stats: pokemonDetail.stats))
                 ])
+                self.dataSource.onNext(data)
             case .error:
-                self.message.onNext("Error occurred, try again later.")
+                var data: [DataSource] = [
+                    .image(viewModel: ImageAndTypeViewModel(url: pokemonDetail.sprites.front_default, types: pokemonDetail.types, pokemonSpriteService: self.pokemonSpriteService)),
+                    .informations(viewModel: InformationsViewModel(pokemonDetail: pokemonDetail))
+                ]
+                if !pokemonDetail.sprites.isEmpty {
+                    data.append(contentsOf: [
+                        .header(viewModel: HeaderViewModel(header: "SPRITES", color: nil)),
+                        .sprites(viewModel: SpritesViewModel(sprites: pokemonDetail.sprites, pokemonSpriteService: self.pokemonSpriteService))
+                    ])
+                }
+                data.append(contentsOf: [
+                    .header(viewModel: HeaderViewModel(header: "STATS", color: nil)),
+                    .stats(viewModel: StatsViewModel(stats: pokemonDetail.stats))
+                ])
+                self.dataSource.onNext(data)
             default: break
             }
         }.disposed(by: disposeBag)

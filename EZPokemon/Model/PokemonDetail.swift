@@ -37,8 +37,12 @@ struct PokemonSprites: Decodable {
     let front_female: String?
     let front_shiny_female: String?
     let back_shiny: String?
-    let front_default: String
+    let front_default: String?
     let front_shiny: String?
+    
+    var isEmpty: Bool {
+        return back_female == nil && back_shiny_female == nil && back_default == nil && front_female == nil && front_shiny_female == nil && back_shiny == nil && front_default == nil && front_shiny == nil
+    }
 }
 
 struct GameIndex: Decodable {

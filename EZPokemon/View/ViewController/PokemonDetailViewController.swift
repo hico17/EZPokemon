@@ -27,6 +27,7 @@ class PokemonDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.navigationBar.prefersLargeTitles = true
         addSubviews()
         addConstraints()
         bindData()
@@ -58,9 +59,17 @@ class PokemonDetailViewController: UIViewController {
         return activityIndicatorView
     }()
     
+    private lazy var messageView: MessageView = {
+        let messageView = MessageView(frame: .zero)
+        return messageView
+    }()
+    
     private func bindData() {
         viewModel.name.bind(to: rx.title).disposed(by: disposeBag)
         viewModel.isLoading.bind(to: activityIndicatorView.rx.isAnimating).disposed(by: disposeBag)
+        viewModel.message.observe(on: MainScheduler.instance).subscribe(onNext: { message in
+            self.messageView.showAndHide(message: message)
+        }).disposed(by: disposeBag)
         viewModel.dataSource.bind(to: tableView.rx.items) { tableView, index, dataSource -> UITableViewCell in
             switch dataSource {
             case .image(let viewModel):
@@ -100,13 +109,17 @@ extension PokemonDetailViewController: CodeDesignable {
     func addSubviews() {
         view.addSubview(tableView)
         view.addSubview(activityIndicatorView)
+        view.addSubview(messageView)
     }
     
     func addConstraints() {
         tableView.constraint(to: view)
         NSLayoutConstraint.activateWithoutResizingMasks([
             activityIndicatorView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            activityIndicatorView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            activityIndicatorView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            messageView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            messageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            messageView.rightAnchor.constraint(equalTo: view.rightAnchor)
         ])
     }
 }

@@ -24,7 +24,7 @@ class PokemonListItemViewModel {
     let pokemonListItem: PokemonListItem
 
     lazy var name = Observable<String>.just(pokemonListItem.name.uppercased())
-    lazy var image = BehaviorSubject<UIImage>(value: UIImage.Named.missingno)
+    lazy var image = BehaviorSubject<UIImage>(value: UIImage())
     var isLoading = BehaviorSubject<Bool>(value: false)
     
     var pokemonDetail: PokemonDetail?
@@ -34,7 +34,11 @@ class PokemonListItemViewModel {
         pokemonDetailService.getPokemonDetail(name: pokemonListItem.name).subscribe(onNext: { [weak self] pokemonDetail in
             guard let self = self else { return }
             self.pokemonDetail = pokemonDetail
-            self.pokemonSpriteService.getPokemonImage(url: pokemonDetail.sprites.front_default).subscribe { event in
+            guard let frontDefaultURL = pokemonDetail.sprites.front_default else {
+                self.isLoading.onNext(false)
+                return self.image.onNext(UIImage.Named.missingno)
+            }
+            self.pokemonSpriteService.getPokemonImage(url: frontDefaultURL).subscribe { event in
                 self.isLoading.onNext(false)
                 switch event {
                 case .next(let image):

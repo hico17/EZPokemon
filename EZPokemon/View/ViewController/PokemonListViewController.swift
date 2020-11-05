@@ -32,7 +32,6 @@ class PokemonListViewController: UIViewController {
         self.view = view
         addSubviews()
         addConstraints()
-        pokemonCollectionView.collectionViewLayout = collectionViewLayout
     }
     
     override func viewDidLoad() {
@@ -42,10 +41,14 @@ class PokemonListViewController: UIViewController {
         viewModel.fetchPokemonListItemViewModel()
     }
     
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        pokemonCollectionView.collectionViewLayout.invalidateLayout()
-        pokemonCollectionView.collectionViewLayout = collectionViewLayout
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        pokemonCollectionView.collectionViewLayout = collectionViewLayout(viewWidth: view.bounds.width)
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        pokemonCollectionView.collectionViewLayout = collectionViewLayout(viewWidth: size.width)
     }
     
     required init?(coder: NSCoder) {
@@ -65,13 +68,13 @@ class PokemonListViewController: UIViewController {
         return collectionView
     }()
     
-    private var collectionViewLayout: UICollectionViewFlowLayout {
+    private func collectionViewLayout(viewWidth: CGFloat) -> UICollectionViewFlowLayout {
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         let numberOfPokemons: CGFloat = 3
         let spacing: CGFloat = 17
         let inset = UIEdgeInsets(top: spacing, left: spacing, bottom: spacing, right: spacing)
         let totalEmptySpace = spacing * (numberOfPokemons - 1) + inset.left + inset.right
-        let width = (pokemonCollectionView.frame.width - totalEmptySpace) / numberOfPokemons
+        let width = (viewWidth - totalEmptySpace) / numberOfPokemons
         layout.itemSize = CGSize(width: width, height: width)
         layout.sectionInset = inset
         layout.minimumLineSpacing = spacing

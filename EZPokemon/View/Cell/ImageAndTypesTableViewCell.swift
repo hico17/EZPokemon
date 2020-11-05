@@ -13,6 +13,7 @@ class ImageAndTypesTableViewCell: UITableViewCell, Reusable {
     
     var viewModel: ImageAndTypeViewModel? {
         didSet {
+            viewModel?.isLoading.bind(to: activityIndicatorView.rx.isAnimating).disposed(by: disposeBag)
             viewModel?.image.bind(to: spriteImageView.rx.image).disposed(by: disposeBag)
             viewModel?.types.bind(to: label.rx.text).disposed(by: disposeBag)
         }
@@ -72,6 +73,12 @@ class ImageAndTypesTableViewCell: UITableViewCell, Reusable {
         return label
     }()
     
+    private lazy var activityIndicatorView: UIActivityIndicatorView = {
+        let activityIndicatorView = UIActivityIndicatorView(style: .white)
+        activityIndicatorView.hidesWhenStopped = true
+        return activityIndicatorView
+    }()
+    
     private func commonInit() {
         addSubviews()
         addConstraints()
@@ -86,12 +93,14 @@ extension ImageAndTypesTableViewCell: CodeDesignable {
         contentView.addSubview(spriteImageView)
         contentView.addSubview(shadowView)
         contentView.addSubview(roundedView)
+        contentView.addSubview(activityIndicatorView)
         roundedView.contentView.addSubview(label)
     }
     
     func addConstraints() {
         roundedView.constraint(to: shadowView)
         label.constraint(to: roundedView, padding: UIEdgeInsets(top: 8, left: 17, bottom: -8, right: -17))
+        activityIndicatorView.constraint(to: spriteImageView)
         NSLayoutConstraint.activateWithoutResizingMasks([
             spriteImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 17),
             spriteImageView.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 17),

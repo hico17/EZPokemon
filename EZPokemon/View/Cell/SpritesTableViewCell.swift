@@ -16,6 +16,7 @@ class SpritesTableViewCell: UITableViewCell, Reusable {
             viewModel?.images.observe(on: MainScheduler.instance).bind(to: collectionView.rx.items(cellIdentifier: ImageCollectionViewCell.reusableIdentifier, cellType: ImageCollectionViewCell.self)) { index, image, cell in
                 cell.image = image
             }.disposed(by: disposeBag)
+            viewModel?.isLoading.bind(to: activityIndicatorView.rx.isAnimating).disposed(by: disposeBag)
         }
     }
     
@@ -52,6 +53,12 @@ class SpritesTableViewCell: UITableViewCell, Reusable {
         return collectionView
     }()
     
+    private var activityIndicatorView: UIActivityIndicatorView = {
+        let activityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
+        activityIndicatorView.hidesWhenStopped = true
+        return activityIndicatorView
+    }()
+    
     private var collectionViewFlowLayout: UICollectionViewFlowLayout {
         let collectionViewLayout = UICollectionViewFlowLayout()
         let height = bounds.height
@@ -79,9 +86,11 @@ extension SpritesTableViewCell: CodeDesignable {
     
     func addSubviews() {
         contentView.addSubview(collectionView)
+        contentView.addSubview(activityIndicatorView)
     }
     
     func addConstraints() {
         collectionView.constraint(to: contentView)
+        activityIndicatorView.constraint(to: contentView)
     }
 }

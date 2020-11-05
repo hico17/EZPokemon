@@ -26,8 +26,10 @@ class MessageView: UIView {
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.05) {
                 self.alpha = 1
             }
-        } completion: { _ in
-            self.alpha = 0
+        } completion: { completed in
+            if completed {
+                self.alpha = 0
+            }
         }
     }
     

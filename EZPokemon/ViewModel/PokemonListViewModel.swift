@@ -26,6 +26,10 @@ class PokemonListViewModel {
     var delegate: PokemonListViewModelDelegate?
     
     func fetchPokemonListItemViewModel() {
+        guard !endReached else {
+            message.onNext("You reached the end of the Pokédex")
+            return
+        }
         isLoading.onNext(true)
         pokemonListService
             .getPokemonList(limit: limit, offset: currentOffset)
@@ -37,6 +41,9 @@ class PokemonListViewModel {
                 case .next(let viewModels):
                     if !viewModels.isEmpty {
                         self.currentOffset += self.limit
+                    } else {
+                        self.endReached = true
+                        self.message.onNext("You reached the end of the Pokédex")
                     }
                     if var currentViewModels = try? self.pokemonListItemViewModels.value() {
                         currentViewModels.append(contentsOf: viewModels)
@@ -82,6 +89,7 @@ class PokemonListViewModel {
     private let disposeBag = DisposeBag()
     private let limit = 20
     private var currentOffset = 0
+    private var endReached = false
     
     private func handle(error: Error) {
         switch error {
