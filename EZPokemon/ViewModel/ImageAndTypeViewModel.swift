@@ -34,9 +34,13 @@ struct ImageAndTypeViewModel {
             image.onNext(UIImage.Named.missingno)
             return
         }
-        pokemonSpriteService.getPokemonImage(url: url).subscribe(onNext: { downloadedImage in
+        pokemonSpriteService.getPokemonImage(url: url).subscribe { event in
             isLoading.onNext(false)
-            image.onNext(downloadedImage)
-        }).disposed(by: disposeBag)
+            switch event {
+            case .next(let downloadedImage):
+                image.onNext(downloadedImage)
+            default: break
+            }
+        }.disposed(by: disposeBag)
     }
 }
