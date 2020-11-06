@@ -5,7 +5,6 @@ target 'EZPokemon' do
   use_frameworks!
   
   # Pods for EZPokemon
-  pod 'RxSwift', '6.0.0-rc.1'
   pod 'RxCocoa', '6.0.0-rc.1'
   pod 'Utilities', :path => 'Utilities'
 end
