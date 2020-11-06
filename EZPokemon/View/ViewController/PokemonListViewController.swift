@@ -41,16 +41,6 @@ class PokemonListViewController: UIViewController {
         viewModel.fetchPokemonListItemViewModel()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        pokemonCollectionView.collectionViewLayout = collectionViewLayout(viewWidth: view.bounds.width)
-    }
-    
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        pokemonCollectionView.collectionViewLayout = collectionViewLayout(viewWidth: size.width)
-    }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -105,6 +95,15 @@ class PokemonListViewController: UIViewController {
         viewModel.isLoading.bind(to: rx.isLoading).disposed(by: disposeBag)
         viewModel.message.observe(on: MainScheduler.instance).subscribe(onNext: { [weak self] message in
             self?.messageView.showAndHide(message: message)
+        }).disposed(by: disposeBag)
+        view.rx.observeWeakly(CGRect.self, "frame").subscribe(onNext: { [weak self] frame in
+            guard let self = self, let frame = frame else { return }
+            self.pokemonCollectionView.collectionViewLayout.invalidateLayout()
+            if self.view.safeAreaLayoutGuide.layoutFrame.width > 0 {
+                self.pokemonCollectionView.collectionViewLayout = self.collectionViewLayout(viewWidth: self.view.safeAreaLayoutGuide.layoutFrame.width)
+            } else {
+                self.pokemonCollectionView.collectionViewLayout = self.collectionViewLayout(viewWidth: frame.width)
+            }
         }).disposed(by: disposeBag)
     }
 }
