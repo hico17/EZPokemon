@@ -15,7 +15,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard #available(iOS 13, *) else {
             window = UIWindow()
             let coordinator = AppCoordinator()
-//            let coordinator = PokemonListCoordinator(navigationController: UINavigationController())
             coordinator.start()
             window?.rootViewController = coordinator.rootViewController
             window?.makeKeyAndVisible()

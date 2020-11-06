@@ -47,7 +47,9 @@ public extension Utilities {
                 }
                 
                 task.resume()
-                return Disposables.create()
+                return Disposables.create {
+                    task.cancel()
+                }
             }
         }
         
@@ -79,7 +81,9 @@ public extension Utilities {
                 }
                 
                 task.resume()
-                return Disposables.create()
+                return Disposables.create {
+                    task.cancel()
+                }
             }
         }
         
