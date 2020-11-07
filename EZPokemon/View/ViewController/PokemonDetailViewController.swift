@@ -7,6 +7,7 @@
 
 import UIKit
 import RxSwift
+import Utilities
 
 class PokemonDetailViewController: UIViewController {
     
