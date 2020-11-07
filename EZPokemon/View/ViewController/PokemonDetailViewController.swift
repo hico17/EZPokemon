@@ -38,6 +38,7 @@ class PokemonDetailViewController: UIViewController {
     
     private var viewModel: PokemonDetailViewModel
     private let disposeBag = DisposeBag()
+    private var shownIndices = [IndexPath]()
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -55,6 +56,7 @@ class PokemonDetailViewController: UIViewController {
     
     private lazy var activityIndicatorView: UIActivityIndicatorView = {
         let activityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
+        activityIndicatorView.color = .systemGray
         activityIndicatorView.hidesWhenStopped = true
         return activityIndicatorView
     }()
@@ -99,6 +101,20 @@ class PokemonDetailViewController: UIViewController {
             }
         }.disposed(by: disposeBag)
         tableView.rx.setDelegate(self).disposed(by: disposeBag)
+        tableView.rx.willDisplayCell.subscribe(onNext: { [weak self] cell, indexPath in
+            self?.showCellAnimatedIfNeeded(at: indexPath, cell: cell)
+        }).disposed(by: disposeBag)
+    }
+    
+    private func showCellAnimatedIfNeeded(at indexPath: IndexPath, cell: UITableViewCell) {
+        guard !shownIndices.contains(indexPath) else {
+            return
+        }
+        shownIndices.append(indexPath)
+        cell.alpha = 0
+        UIView.animate(withDuration: 0.3) {
+            cell.alpha = 1
+        }
     }
 }
 
@@ -125,7 +141,6 @@ extension PokemonDetailViewController: CodeDesignable {
 }
 
 // MARK: - UITableViewDelegate
-
 
 extension PokemonDetailViewController: UITableViewDelegate {
     
