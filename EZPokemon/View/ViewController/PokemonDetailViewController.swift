@@ -150,7 +150,7 @@ extension PokemonDetailViewController: UITableViewDelegate {
         }        
         switch datasource {
         case .image:
-            return 200
+            return 170
         case .informations:
             return 100
         case .sprites:
