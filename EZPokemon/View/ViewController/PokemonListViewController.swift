@@ -68,10 +68,7 @@ class PokemonListViewController: UIViewController {
         return collectionView
     }()
     
-    private lazy var messageView: MessageView = {
-        let messageView = MessageView(frame: .zero)
-        return messageView
-    }()
+    private lazy var messageView = MessageView(frame: .zero)
     
     private lazy var activityIndicatorView: UIActivityIndicatorView = {
         let activityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
@@ -128,11 +125,11 @@ extension PokemonListViewController: CodeDesignable {
         NSLayoutConstraint.activateWithoutResizingMasks([
             pokemonCollectionView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
             pokemonCollectionView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
-            pokemonCollectionView.heightAnchor.constraint(equalTo: view.heightAnchor),
-            pokemonCollectionView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            pokemonCollectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            pokemonCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             messageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             messageView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
-            messageView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
+            messageView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor)
         ])
     }
 }

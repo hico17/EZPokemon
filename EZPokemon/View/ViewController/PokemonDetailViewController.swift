@@ -133,9 +133,9 @@ extension PokemonDetailViewController: CodeDesignable {
         NSLayoutConstraint.activateWithoutResizingMasks([
             activityIndicatorView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
             activityIndicatorView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
-            messageView.leftAnchor.constraint(equalTo: view.leftAnchor),
-            messageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            messageView.rightAnchor.constraint(equalTo: view.rightAnchor)
+            messageView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
+            messageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            messageView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor)
         ])
     }
 }
