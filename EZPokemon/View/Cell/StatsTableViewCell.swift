@@ -24,11 +24,6 @@ class StatsTableViewCell: UITableViewCell, Reusable {
         disposeBag = DisposeBag()
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        collectionView.collectionViewLayout = collectionViewLayout
-    }
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         commonInit()
@@ -44,23 +39,16 @@ class StatsTableViewCell: UITableViewCell, Reusable {
     private var disposeBag = DisposeBag()
 
     private lazy var collectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout())
+        let collectionViewLayout = UICollectionViewFlowLayout()
+        collectionViewLayout.scrollDirection = .horizontal
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
+        collectionView.delegate = self
         collectionView.backgroundColor = .clear
         collectionView.alwaysBounceHorizontal = true
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.register(StatCollectionViewCell.self)
         return collectionView
     }()
-    
-    private var collectionViewLayout: UICollectionViewFlowLayout {
-        let collectionViewLayout = UICollectionViewFlowLayout()
-        let padding: CGFloat = 17
-        collectionViewLayout.itemSize = CGSize(width: 100, height: collectionView.bounds.height - padding*2)
-        collectionViewLayout.sectionInset = UIEdgeInsets(top: padding, left: padding, bottom: padding, right: padding)
-        collectionViewLayout.minimumLineSpacing = padding
-        collectionViewLayout.scrollDirection = .horizontal
-        return collectionViewLayout
-    }
     
     private func commonInit() {
         addSubviews()
@@ -78,5 +66,24 @@ extension StatsTableViewCell: CodeDesignable {
     
     func addConstraints() {
         collectionView.constraint(to: contentView)
+    }
+}
+
+// MARK: - UICollectionViewDelegateFlowLayout
+
+extension StatsTableViewCell: UICollectionViewDelegateFlowLayout {
+    
+    private var padding: CGFloat { 17 }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 100, height: collectionView.bounds.height - padding * 2)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: padding, left: padding, bottom: padding, right: padding)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return padding
     }
 }
