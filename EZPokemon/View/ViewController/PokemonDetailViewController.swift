@@ -115,8 +115,8 @@ extension PokemonDetailViewController: CodeDesignable {
     func addConstraints() {
         tableView.constraint(to: view)
         NSLayoutConstraint.activateWithoutResizingMasks([
-            activityIndicatorView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            activityIndicatorView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            activityIndicatorView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+            activityIndicatorView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
             messageView.leftAnchor.constraint(equalTo: view.leftAnchor),
             messageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             messageView.rightAnchor.constraint(equalTo: view.rightAnchor)
