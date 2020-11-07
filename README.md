@@ -24,6 +24,8 @@ Customize the project with something you think will be useful for this app.
 
 ## Considerations
 
+The app is created for iPhone and iPad. It uses the UISplitViewController in order to fit both the screens optimally. The app is also designed to be used in Dark Mode.
+
 An MVVM pillar is known to be data binding. There are two well-known responsive frameworks that could have helped accomplish this task: Combine and RxSwift.
 
 One of the constraints of the project is to use iOS 11 as a deployment target, so RxSwift (and therefore RxCocoa) was a mandatory choice, because Combine is only available starting with iOS 13.
