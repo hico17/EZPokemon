@@ -74,7 +74,8 @@ class PokemonListViewController: UIViewController {
     }()
     
     private lazy var activityIndicatorView: UIActivityIndicatorView = {
-        let activityIndicatorView = UIActivityIndicatorView()
+        let activityIndicatorView = UIActivityIndicatorView(style: .whiteLarge)
+        activityIndicatorView.color = .systemGray
         activityIndicatorView.hidesWhenStopped = true
         return activityIndicatorView
     }()
@@ -85,18 +86,10 @@ class PokemonListViewController: UIViewController {
             cell.viewModel = viewModel
         }.disposed(by: disposeBag)
         pokemonCollectionView.rx.willDisplayCell.subscribe { [weak self] cell, indexPath in
-            guard let self = self else { return }
-            if !self.shownIndices.contains(indexPath) {
-                self.shownIndices.append(indexPath)
-                cell.alpha = 0
-                UIView.animate(withDuration: 0.3) {
-                    cell.alpha = 1
-                }
-            }
-            self.viewModel.willShow(viewModelAtIndex: indexPath.row)
-            let numberOfItems = self.pokemonCollectionView.numberOfItems(inSection: 0)
-            if numberOfItems != 0, indexPath.row == numberOfItems-1 {
-                self.viewModel.didScrollToEnd()
+            self?.showCellAnimatedIfNeeded(at: indexPath, cell: cell)
+            self?.viewModel.willShow(viewModelAtIndex: indexPath.row)
+            if let numberOfItems = self?.pokemonCollectionView.numberOfItems(inSection: 0), numberOfItems != 0, indexPath.row == numberOfItems-1 {
+                self?.viewModel.didScrollToEnd()
             }
         }.disposed(by: disposeBag)
         pokemonCollectionView.rx.modelSelected(PokemonListItemViewModel.self).subscribe(onNext: { [weak self] selectedViewModel in
@@ -106,6 +99,17 @@ class PokemonListViewController: UIViewController {
         viewModel.message.observe(on: MainScheduler.instance).subscribe(onNext: { [weak self] message in
             self?.messageView.showAndHide(message: message)
         }).disposed(by: disposeBag)
+    }
+    
+    private func showCellAnimatedIfNeeded(at indexPath: IndexPath, cell: UICollectionViewCell) {
+        guard !shownIndices.contains(indexPath) else {
+            return
+        }
+        shownIndices.append(indexPath)
+        cell.alpha = 0
+        UIView.animate(withDuration: 0.3) {
+            cell.alpha = 1
+        }
     }
 }
 
