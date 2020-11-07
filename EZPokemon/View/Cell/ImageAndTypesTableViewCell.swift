@@ -49,15 +49,6 @@ class ImageAndTypesTableViewCell: UITableViewCell, Reusable {
         return imageView
     }()
     
-    private lazy var shadowView: UIView = {
-        let view = UIView()
-        view.layer.shadowColor = UIColor.black.cgColor
-        view.layer.shadowOpacity = 0.1
-        view.layer.shadowOffset = .zero
-        view.layer.shadowRadius = 8
-        return view
-    }()
-    
     private lazy var roundedView: UIVisualEffectView = {
         let blurEffect = UIBlurEffect(style: .regular)
         let visualEffectView = UIVisualEffectView(effect: blurEffect)
@@ -68,7 +59,7 @@ class ImageAndTypesTableViewCell: UITableViewCell, Reusable {
     
     private lazy var label: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 17, weight: .medium)
+        label.font = UIFont.italicSystemFont(ofSize: 15)
         label.setContentHuggingPriority(.defaultHigh, for: .vertical)
         return label
     }()
@@ -91,23 +82,21 @@ extension ImageAndTypesTableViewCell: CodeDesignable {
     
     func addSubviews() {
         contentView.addSubview(spriteImageView)
-        contentView.addSubview(shadowView)
-        contentView.addSubview(roundedView)
         contentView.addSubview(activityIndicatorView)
+        contentView.addSubview(roundedView)
         roundedView.contentView.addSubview(label)
     }
     
     func addConstraints() {
-        roundedView.constraint(to: shadowView)
-        label.constraint(to: roundedView, padding: UIEdgeInsets(top: 8, left: 17, bottom: -8, right: -17))
         activityIndicatorView.constraint(to: spriteImageView)
+        label.constraint(to: roundedView, padding: UIEdgeInsets(top: 0, left: 17, bottom: 0, right: -17))
         NSLayoutConstraint.activateWithoutResizingMasks([
             spriteImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 17),
             spriteImageView.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 17),
-            spriteImageView.bottomAnchor.constraint(equalTo: shadowView.topAnchor, constant: -17),
+            spriteImageView.bottomAnchor.constraint(equalTo: roundedView.topAnchor, constant: -8),
             spriteImageView.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -17),
-            shadowView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            shadowView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -17)
+            roundedView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            roundedView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -17)
         ])
     }
 }
