@@ -14,6 +14,9 @@ class PokemonListViewController: UIViewController {
     
     var isLoading: Bool = false {
         didSet {
+            if pokemonCollectionView.numberOfItems(inSection: 0) == 0 {
+                isLoading ? activityIndicatorView.startAnimating() : activityIndicatorView.stopAnimating()
+            }
         }
     }
     
@@ -54,6 +57,7 @@ class PokemonListViewController: UIViewController {
     
     private let viewModel: PokemonListViewModel
     private let disposeBag = DisposeBag()
+    private var shownIndices = [IndexPath]()
     
     private lazy var pokemonCollectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: UICollectionViewFlowLayout())
@@ -69,15 +73,30 @@ class PokemonListViewController: UIViewController {
         return messageView
     }()
     
+    private lazy var activityIndicatorView: UIActivityIndicatorView = {
+        let activityIndicatorView = UIActivityIndicatorView()
+        activityIndicatorView.hidesWhenStopped = true
+        return activityIndicatorView
+    }()
+    
     private func bindData() {
         viewModel.title.bind(to: rx.title).disposed(by: disposeBag)
         viewModel.pokemonListItemViewModels.observe(on: MainScheduler.instance).bind(to: pokemonCollectionView.rx.items(cellIdentifier: PokemonListItemCollectionViewCell.reusableIdentifier, cellType: PokemonListItemCollectionViewCell.self)) { index, viewModel, cell in
             cell.viewModel = viewModel
         }.disposed(by: disposeBag)
         pokemonCollectionView.rx.willDisplayCell.subscribe { [weak self] cell, indexPath in
-            self?.viewModel.willShow(viewModelAtIndex: indexPath.row)
-            if let numberOfItems = self?.pokemonCollectionView.numberOfItems(inSection: 0), numberOfItems != 0, indexPath.row == numberOfItems-1 {
-                self?.viewModel.didScrollToEnd()
+            guard let self = self else { return }
+            if !self.shownIndices.contains(indexPath) {
+                self.shownIndices.append(indexPath)
+                cell.alpha = 0
+                UIView.animate(withDuration: 0.3) {
+                    cell.alpha = 1
+                }
+            }
+            self.viewModel.willShow(viewModelAtIndex: indexPath.row)
+            let numberOfItems = self.pokemonCollectionView.numberOfItems(inSection: 0)
+            if numberOfItems != 0, indexPath.row == numberOfItems-1 {
+                self.viewModel.didScrollToEnd()
             }
         }.disposed(by: disposeBag)
         pokemonCollectionView.rx.modelSelected(PokemonListItemViewModel.self).subscribe(onNext: { [weak self] selectedViewModel in
@@ -97,9 +116,11 @@ extension PokemonListViewController: CodeDesignable {
     func addSubviews() {
         view.addSubview(pokemonCollectionView)
         view.addSubview(messageView)
+        view.addSubview(activityIndicatorView)
     }
     
     func addConstraints() {
+        activityIndicatorView.constraint(to: view)
         NSLayoutConstraint.activateWithoutResizingMasks([
             pokemonCollectionView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
             pokemonCollectionView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
