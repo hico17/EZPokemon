@@ -35,17 +35,15 @@ class SpritesTableViewCell: UITableViewCell, Reusable {
         disposeBag = DisposeBag()
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        collectionView.collectionViewLayout = collectionViewFlowLayout
-    }
-    
     // MARK: Private
     
     private var disposeBag = DisposeBag()
     
     private lazy var collectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: bounds, collectionViewLayout: UICollectionViewFlowLayout())
+        let collectionViewLayout = UICollectionViewFlowLayout()
+        collectionViewLayout.scrollDirection = .horizontal
+        let collectionView = UICollectionView(frame: bounds, collectionViewLayout: collectionViewLayout)
+        collectionView.delegate = self
         collectionView.backgroundColor = .clear
         collectionView.alwaysBounceHorizontal = true
         collectionView.showsHorizontalScrollIndicator = false
@@ -58,21 +56,6 @@ class SpritesTableViewCell: UITableViewCell, Reusable {
         activityIndicatorView.hidesWhenStopped = true
         return activityIndicatorView
     }()
-    
-    private var collectionViewFlowLayout: UICollectionViewFlowLayout {
-        let collectionViewLayout = UICollectionViewFlowLayout()
-        let height = bounds.height
-        let width = height
-        collectionViewLayout.itemSize = CGSize(width: width, height: height)
-        let numberOfItems = 4
-        let totalItemsWidth: CGFloat = CGFloat(numberOfItems) * height
-        let horizontalInset: CGFloat = (collectionView.bounds.width - totalItemsWidth) / 2
-        collectionViewLayout.sectionInset = UIEdgeInsets(top: 0, left: horizontalInset, bottom: 0, right: horizontalInset)
-        collectionViewLayout.minimumInteritemSpacing = 0
-        collectionViewLayout.minimumLineSpacing = 0
-        collectionViewLayout.scrollDirection = .horizontal
-        return collectionViewLayout
-    }
     
     private func commonInit() {
         addSubviews()
@@ -92,5 +75,29 @@ extension SpritesTableViewCell: CodeDesignable {
     func addConstraints() {
         collectionView.constraint(to: contentView)
         activityIndicatorView.constraint(to: contentView)
+    }
+}
+
+// MARK: - UICollectionViewDelegateFlowLayout
+
+extension SpritesTableViewCell: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: collectionView.bounds.height, height: collectionView.bounds.width)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        let numberOfItems = 4
+        let totalItemsWidth: CGFloat = CGFloat(numberOfItems) * collectionView.bounds.height
+        let horizontalInset: CGFloat = (collectionView.bounds.width - totalItemsWidth) / 2
+        return UIEdgeInsets(top: 0, left: horizontalInset, bottom: 0, right: horizontalInset)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
     }
 }
