@@ -41,6 +41,11 @@ class PokemonListViewController: UIViewController {
         viewModel.fetchPokemonListItemViewModel()
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        pokemonCollectionView.collectionViewLayout.invalidateLayout()
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -51,27 +56,13 @@ class PokemonListViewController: UIViewController {
     private let disposeBag = DisposeBag()
     
     private lazy var pokemonCollectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: UICollectionViewLayout())
+        let collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: UICollectionViewFlowLayout())
         collectionView.backgroundColor = .clear
         collectionView.alwaysBounceVertical = true
+        collectionView.delegate = self
         collectionView.register(PokemonListItemCollectionViewCell.self)
         return collectionView
     }()
-    
-    private func collectionViewLayout(viewWidth: CGFloat) -> UICollectionViewFlowLayout {
-        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        let numberOfPokemons: CGFloat = 3
-        let spacing: CGFloat = 17
-        let inset = UIEdgeInsets(top: spacing, left: spacing, bottom: spacing, right: spacing)
-        let totalEmptySpace = spacing * (numberOfPokemons - 1) + inset.left + inset.right
-        let width = (viewWidth - totalEmptySpace) / numberOfPokemons
-        layout.itemSize = CGSize(width: width, height: width)
-        layout.sectionInset = inset
-        layout.minimumLineSpacing = spacing
-        layout.minimumInteritemSpacing = spacing
-        layout.scrollDirection = .vertical
-        return layout
-    }
     
     private lazy var messageView: MessageView = {
         let messageView = MessageView(frame: .zero)
@@ -96,15 +87,6 @@ class PokemonListViewController: UIViewController {
         viewModel.message.observe(on: MainScheduler.instance).subscribe(onNext: { [weak self] message in
             self?.messageView.showAndHide(message: message)
         }).disposed(by: disposeBag)
-        view.rx.observeWeakly(CGRect.self, "frame").subscribe(onNext: { [weak self] frame in
-            guard let self = self, let frame = frame else { return }
-            self.pokemonCollectionView.collectionViewLayout.invalidateLayout()
-            if self.view.safeAreaLayoutGuide.layoutFrame.width > 0 {
-                self.pokemonCollectionView.collectionViewLayout = self.collectionViewLayout(viewWidth: self.view.safeAreaLayoutGuide.layoutFrame.width)
-            } else {
-                self.pokemonCollectionView.collectionViewLayout = self.collectionViewLayout(viewWidth: frame.width)
-            }
-        }).disposed(by: disposeBag)
     }
 }
 
@@ -119,8 +101,8 @@ extension PokemonListViewController: CodeDesignable {
     
     func addConstraints() {
         NSLayoutConstraint.activateWithoutResizingMasks([
-            pokemonCollectionView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 0),
-            pokemonCollectionView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: 0),
+            pokemonCollectionView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
+            pokemonCollectionView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
             pokemonCollectionView.heightAnchor.constraint(equalTo: view.heightAnchor),
             pokemonCollectionView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             messageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
@@ -138,5 +120,30 @@ extension Reactive where Base: PokemonListViewController {
         return Binder(self.base) { vc, isLoading in
             vc.isLoading = isLoading
         }
+    }
+}
+
+// MARK: - UICollectionViewDelegateFlowLayout
+
+extension PokemonListViewController: UICollectionViewDelegateFlowLayout {
+    
+    private var numberOfPokemons: CGFloat { 3 }
+    private var spacing: CGFloat { 17 }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let totalEmptySpace: CGFloat = spacing * (numberOfPokemons - 1) + spacing + spacing
+        return CGSize(width: (collectionView.bounds.width - totalEmptySpace) / numberOfPokemons, height: (collectionView.bounds.width - totalEmptySpace) / numberOfPokemons)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: spacing, left: spacing, bottom: spacing, right: spacing)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return spacing
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return spacing
     }
 }
