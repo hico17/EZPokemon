@@ -10,7 +10,6 @@ PODS:
 
 DEPENDENCIES:
   - RxCocoa (= 6.0.0-rc.1)
-  - RxSwift (= 6.0.0-rc.1)
   - Utilities (from `Utilities`)
 
 SPEC REPOS:
@@ -29,6 +28,6 @@ SPEC CHECKSUMS:
   RxSwift: dae1a32c48148897494b9e2a6b00a68b40694236
   Utilities: 197bfebcd6fc4f7312f5544a7970bdbdef35da25
 
-PODFILE CHECKSUM: edc825b876ba7d4e3bd329acc8f16ae60986cefd
+PODFILE CHECKSUM: 26c0d16561479167337fa9046e112e5b481bc301
 
 COCOAPODS: 1.9.3

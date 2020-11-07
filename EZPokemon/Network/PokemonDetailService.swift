@@ -11,27 +11,16 @@ import Utilities
 
 class PokemonDetailService: PokemonDetailProtocol {
 
-    func getPokemonDetail(id: Int) -> Observable<GetPokemonDetail> {
-        return networkManager.executeRequest(url: "https://pokeapi.co/api/v2/pokemon/\(id)", method: "GET", dataType: GetPokemonDetail.self)
+    func getPokemonDetail(id: Int) -> Observable<PokemonDetail> {
+        return networkManager.executeRequest(url: "https://pokeapi.co/api/v2/pokemon/\(id)", method: "GET", dataType: PokemonDetail.self)
     }
     
-    func getPokemonDetail(name: String) -> Observable<GetPokemonDetail> {
-        return networkManager.executeRequest(url: "https://pokeapi.co/api/v2/pokemon/\(name)", method: "GET", dataType: GetPokemonDetail.self)
+    func getPokemonDetail(name: String) -> Observable<PokemonDetail> {
+        return networkManager.executeRequest(url: "https://pokeapi.co/api/v2/pokemon/\(name)", method: "GET", dataType: PokemonDetail.self)
     }
     
-    func getPokemonImage(url: String) -> Observable<UIImage> {
-        return Observable.create { observer -> Disposable in
-            return self.networkManager.executeRequest(url: url, method: "GET").subscribe { event in
-                switch event {
-                case .next(let data):
-                    observer.onNext(UIImage(data: data) ?? UIImage())
-                case .error(let error):
-                    observer.onError(error)
-                case .completed:
-                    observer.onCompleted()
-                }
-            }
-        }
+    func getPokemonSpeciesDetail(name: String) -> Observable<PokemonSpeciesDetail> {
+        return networkManager.executeRequest(url: "https://pokeapi.co/api/v2/pokemon-species/\(name)", method: "GET", dataType: PokemonSpeciesDetail.self)
     }
     
     private let networkManager = Utilities.NetworkManager()

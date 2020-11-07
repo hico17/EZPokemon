@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct GetPokemonList: Decodable {
+struct PokemonList: Decodable {
     let count: Int
-    let results: [GetPokemonListItem]
+    let results: [PokemonListItem]
 }

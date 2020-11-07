@@ -9,7 +9,11 @@ import RxSwift
 import Utilities
 
 protocol PokemonListProtocol {
-    func getPokemonList(limit: Int, offset: Int) -> Observable<[GetPokemonListItem]>
+    func getPokemonList(limit: Int, offset: Int) -> Observable<[PokemonListItem]>
+}
+
+protocol PokemonListViewModelDelegate: class {
+    func pokemonListViewModel(_ pokemonListViewModel: PokemonListViewModel, didSelectItem item: PokemonListItemViewModel)
 }
 
 class PokemonListViewModel {
@@ -19,11 +23,17 @@ class PokemonListViewModel {
     var message = PublishSubject<String>()
     var isLoading = BehaviorSubject<Bool>(value: false)
     
+    var delegate: PokemonListViewModelDelegate?
+    
     func fetchPokemonListItemViewModel() {
+        guard !endReached else {
+            message.onNext("You reached the end of the Pokédex")
+            return
+        }
         isLoading.onNext(true)
         pokemonListService
             .getPokemonList(limit: limit, offset: currentOffset)
-            .map{$0.map{PokemonListItemViewModel(pokemonListItem: $0, pokemonDetailService: self.pokemonDetailService)}}
+            .map{$0.map{PokemonListItemViewModel(pokemonListItem: $0, pokemonDetailService: self.pokemonDetailService, pokemonSpriteService: self.pokemonSpriteService)}}
             .subscribe { [weak self] event in
                 guard let self = self else { return }
                 self.isLoading.onNext(false)
@@ -31,6 +41,9 @@ class PokemonListViewModel {
                 case .next(let viewModels):
                     if !viewModels.isEmpty {
                         self.currentOffset += self.limit
+                    } else {
+                        self.endReached = true
+                        self.message.onNext("You reached the end of the Pokédex")
                     }
                     if var currentViewModels = try? self.pokemonListItemViewModels.value() {
                         currentViewModels.append(contentsOf: viewModels)
@@ -59,20 +72,24 @@ class PokemonListViewModel {
     }
     
     func didSelect(viewModel: PokemonListItemViewModel) {
-        // TODO
+        delegate?.pokemonListViewModel(self, didSelectItem: viewModel)
     }
     
-    init(pokemonListService: PokemonListProtocol) {
+    init(pokemonListService: PokemonListProtocol, pokemonDetailService: PokemonDetailProtocol, pokemonSpriteService: PokemonSpriteProtocol) {
         self.pokemonListService = pokemonListService
+        self.pokemonDetailService = pokemonDetailService
+        self.pokemonSpriteService = pokemonSpriteService
     }
     
     // MARK: Private
     
     private let pokemonListService: PokemonListProtocol
-    private let pokemonDetailService = PokemonDetailService()
+    private let pokemonDetailService: PokemonDetailProtocol
+    private let pokemonSpriteService: PokemonSpriteProtocol
     private let disposeBag = DisposeBag()
     private let limit = 20
     private var currentOffset = 0
+    private var endReached = false
     
     private func handle(error: Error) {
         switch error {

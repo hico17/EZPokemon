@@ -86,6 +86,7 @@ class PokemonListItemCollectionViewCell: UICollectionViewCell, Reusable {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         label.textAlignment = .center
+        label.setContentCompressionResistancePriority(.required, for: .vertical)
         return label
     }()
     
@@ -107,7 +108,7 @@ class PokemonListItemCollectionViewCell: UICollectionViewCell, Reusable {
 extension PokemonListItemCollectionViewCell: CodeDesignable {
     
     func addSubviews() {
-        addSubview(shadowView)
+        contentView.addSubview(shadowView)
         shadowView.addSubview(roundedView)
         roundedView.contentView.addSubview(nameLabel)
         roundedView.contentView.addSubview(imageView)
@@ -115,7 +116,7 @@ extension PokemonListItemCollectionViewCell: CodeDesignable {
     }
     
     func addConstraints() {
-        shadowView.constraint(to: self)
+        shadowView.constraint(to: self.contentView)
         roundedView.constraint(to: shadowView)
         NSLayoutConstraint.activateWithoutResizingMasks([
             imageView.topAnchor.constraint(equalTo: roundedView.topAnchor),
